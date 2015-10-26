@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1098</width>
+    <height>1045</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Input Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLineEdit" name="input_directory_lineEdit"/>
+    </item>
+    <item row="0" column="4">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Run Number</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QSpinBox" name="spinBox"/>
+    </item>
+    <item row="0" column="7">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Storage Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="8">
+     <widget class="QLineEdit" name="input_directory_lineEdit_2"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="refresh_input_pushButton">
+      <property name="text">
+       <string>Refresh Table</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="browse_input_pushButton">
+      <property name="text">
+       <string>Browse Input Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4" colspan="2">
+     <widget class="QPushButton" name="refresh_pushButton_6">
+      <property name="text">
+       <string>Last Run</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="7">
+     <widget class="QPushButton" name="refresh_storage_pushButton">
+      <property name="text">
+       <string>Refresh Table</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="8">
+     <widget class="QPushButton" name="browse_storage_pushButton">
+      <property name="text">
+       <string>Browse Storage Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Preferred</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="1" rowspan="7" colspan="2">
+     <widget class="QTableWidget" name="in_dir_tableWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>500</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4" rowspan="4" colspan="2">
+     <widget class="QTableWidget" name="in_dir_tableWidget_2"/>
+    </item>
+    <item row="2" column="7" rowspan="7" colspan="2">
+     <widget class="QTableWidget" name="in_dir_tableWidget_3"/>
+    </item>
+    <item row="3" column="3">
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>&gt;&gt;&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="6">
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="text">
+       <string>&gt;&gt;&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="text">
+       <string>&lt;&lt;&lt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="6">
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="text">
+       <string>&lt;&lt;&lt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="9">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Preferred</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>12</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="6" column="4">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Prefix</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="5">
+     <widget class="QLineEdit" name="input_directory_lineEdit_3"/>
+    </item>
+    <item row="7" column="4">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Increment Letter</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="5">
+     <widget class="QLineEdit" name="input_directory_lineEdit_4"/>
+    </item>
+    <item row="8" column="4" colspan="2">
+     <widget class="QPushButton" name="refresh_pushButton_5">
+      <property name="text">
+       <string>Run Database Settings</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1098</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
