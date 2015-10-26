@@ -18,7 +18,9 @@ class pd_functions_class(object):
 class pic_dir_table(object):
 
     def __init__(self, parent):
+        super().__init__()
         self.parent = parent
+        print("got here")
         pass
 
     def default_path(self):
@@ -122,7 +124,7 @@ class pic_dir_table(object):
         print("got here")
         inputpath = QtGui.QFileDialog.getExistingDirectory()
         self.parent.input_directory_lineEdit.setText(inputpath)
-        self.refresh()
+        self.refresh_table()
 
     def refresh_table(self):
         self.table_from_dir()
