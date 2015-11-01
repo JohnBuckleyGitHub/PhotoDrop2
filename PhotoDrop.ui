@@ -113,13 +113,13 @@
      </widget>
     </item>
     <item row="2" column="4" rowspan="4" colspan="2">
-     <widget class="QTableWidget" name="in_dir_tableWidget_2"/>
+     <widget class="QTableWidget" name="transfer_tableWidget"/>
     </item>
     <item row="2" column="7" rowspan="7" colspan="2">
      <widget class="QTableWidget" name="in_dir_tableWidget_3"/>
     </item>
     <item row="3" column="3">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="transfer_input_trans_pushButton">
       <property name="text">
        <string>&gt;&gt;&gt;</string>
       </property>
@@ -133,7 +133,7 @@
      </widget>
     </item>
     <item row="4" column="3">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="untransfer_input_trans_pushButton">
       <property name="text">
        <string>&lt;&lt;&lt;</string>
       </property>

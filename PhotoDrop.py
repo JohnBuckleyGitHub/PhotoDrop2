@@ -9,16 +9,16 @@ import kustomWidgets
 import PhotoDropFunctions
 
 
-class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class): # PhotoDropFunctions.pic_dir_table
+class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDropFunctions.pic_dir_table
 
     def __init__(self):
         super().__init__()
         uic.loadUi('PhotoDrop.ui', self)
         self.setWindowTitle('Photo Renamer')
         self.brush = kustomWidgets.brushstyle()
-        self.input_dir = PhotoDropFunctions.pic_dir_table(self)
-        self.input_dir.default_path()
-        self.input_dir.table_from_dir()
+        self.input_dir = PhotoDropFunctions.pd_ui_class(self, "input")
+        # self.input_dir.default_path()
+        # self.input_dir.table_from_dir()
 
         self.show()
         self.signalMapper = QtCore.QSignalMapper(self)
@@ -26,6 +26,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class): # PhotoDrop
         self.in_dir_tableWidget.cellDoubleClicked.connect(self.input_dir.load_picture)
         self.browse_input_pushButton.clicked.connect(self.input_dir.browse_directory)
         self.refresh_input_pushButton.clicked.connect(self.input_dir.refresh_table)
+        self.transfer_input_trans_pushButton.clicked.connect(self.input_dir.transfer_selection)
         #  self.create_wrl_pushButton.clicked.connect(self.get_box_contents)
         #  self.max_color_horizontalSlider.valueChanged.connect(self.slider_change)
         #  self.color_spinBox.valueChanged.connect(self.spinbox_change)
