@@ -84,6 +84,9 @@ class Pic_Dir_Table(object):
                 self.entry_count += 1
         self.pics_in_dir = sorted(self.pics_in_dir, key=lambda x: x[1])
 
+    def add_selections(self):
+        pass
+
     def create_empty_table(self):
         self.pics_in_dir = []
         self.entry_count = 0
@@ -119,5 +122,8 @@ class Pic_Dir_Table(object):
 
     def transfer_selection(self):
         indices = self.table.selectionModel().selectedRows()
-        for index in sorted(indices):
-            print('Row %d is selected' % index.row())
+        output_list = []
+        for index in indices:
+            output_list.append(self.pics_in_dir[index.row()][0])
+        return output_list
+

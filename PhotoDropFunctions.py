@@ -17,6 +17,10 @@ class pd_ui_class(PictureDirTable.Pic_Dir_Table):
         self.table = self.parent.in_dir_tableWidget
         self.create_dir_table_data()
 
+    def transfer_table(self):
+        self.table = self.parent.transfer_tableWidget
+        self.create_dir_table_data()
+
 
     # def transfer_selection(self):
     #     selection_list = []

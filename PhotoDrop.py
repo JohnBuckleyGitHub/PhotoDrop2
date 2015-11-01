@@ -16,17 +16,17 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         uic.loadUi('PhotoDrop.ui', self)
         self.setWindowTitle('Photo Renamer')
         self.brush = kustomWidgets.brushstyle()
-        self.input_dir = PhotoDropFunctions.pd_ui_class(self, "input")
-        # self.input_dir.default_path()
-        # self.input_dir.table_from_dir()
+        self.input_table = PhotoDropFunctions.pd_ui_class(self, "input")
+        # self.transfer_table = PhotoDropFunctions.pd_ui_class(self, "transfer")
 
         self.show()
         self.signalMapper = QtCore.QSignalMapper(self)
 
-        self.in_dir_tableWidget.cellDoubleClicked.connect(self.input_dir.load_picture)
-        self.browse_input_pushButton.clicked.connect(self.input_dir.browse_directory)
-        self.refresh_input_pushButton.clicked.connect(self.input_dir.refresh_table)
-        self.transfer_input_trans_pushButton.clicked.connect(self.input_dir.transfer_selection)
+        self.in_dir_tableWidget.cellDoubleClicked.connect(self.input_table.load_picture)
+        self.browse_input_pushButton.clicked.connect(self.input_table.browse_directory)
+        self.refresh_input_pushButton.clicked.connect(self.input_table.refresh_table)
+        transfer_list = self.transfer_input_trans_pushButton.clicked.connect(self.input_table.transfer_selection)
+        print(transfer_list)
         #  self.create_wrl_pushButton.clicked.connect(self.get_box_contents)
         #  self.max_color_horizontalSlider.valueChanged.connect(self.slider_change)
         #  self.color_spinBox.valueChanged.connect(self.spinbox_change)
@@ -39,7 +39,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
 
 
 if __name__ == '__main__':
-    myappid = 'PhotoDrop.Beta.0.1'  # arbitrary string
+    myappid = 'Photinput_tableoDrop.Beta.0.1'  # arbitrary string
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     app = QtGui.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon('icon.png'))
