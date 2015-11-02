@@ -14,7 +14,6 @@ class Pic_Dir_Table(object):
 
     def __init__(self):
         self.parent = None
-        self.ui_dict = None
         self.table_parameters()
         self.process_table_parameters()
 
@@ -46,7 +45,7 @@ class Pic_Dir_Table(object):
         # self.in_dir_table = self.parent.in_dir_tableWidget  # makes the table specific to this widget
         table = self.table  # Shortcut for long name
         table.setRowCount(0)
-        self.create_dir_table_data()
+        # self.create_dir_table_data()
         table.setColumnCount(self.colcount)
         for col in range(self.colcount):
             self.table.setColumnWidth(col, self.col_width[col])
@@ -66,6 +65,7 @@ class Pic_Dir_Table(object):
             col = 1
             image_path = self.directory_path + self.pics_in_dir[i][0]
             item = self.load_picture_in_item(image_path, col)
+            item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
             table.setItem(i, col, item)
@@ -80,12 +80,14 @@ class Pic_Dir_Table(object):
             for inst in tl:
                 filename = os.path.basename(inst)
                 creation_time = self.get_creation_times(filename)
-                self.pics_in_dir.append([filename, creation_time])
+                self.pics_in_dir.append([filename, creation_time, inst])
                 self.entry_count += 1
         self.pics_in_dir = sorted(self.pics_in_dir, key=lambda x: x[1])
 
-    def add_selections(self):
-        pass
+    def add_selections(self, transfer_list):
+        for flist in transfer_list:
+            self.pics_in_dir.append(flist)
+            self.entry_count += 1
 
     def create_empty_table(self):
         self.pics_in_dir = []
@@ -112,7 +114,7 @@ class Pic_Dir_Table(object):
 
     def browse_directory(self):
         new_directory_path = QtGui.QFileDialog.getExistingDirectory()
-        #  self.parent.input_directory_lineEdit.setText(new_directory_path)
+        self.parent.input_directory_lineEdit.setText(new_directory_path)
         self.directory_lineEdit.setText(new_directory_path)
         self.refresh_table()
 
@@ -122,8 +124,8 @@ class Pic_Dir_Table(object):
 
     def transfer_selection(self):
         indices = self.table.selectionModel().selectedRows()
-        output_list = []
+        transfer_list = []
         for index in indices:
-            output_list.append(self.pics_in_dir[index.row()][0])
-        return output_list
+            transfer_list.append(self.pics_in_dir[index.row()])
+        return transfer_list
 
