@@ -63,8 +63,6 @@ class Pic_Dir_Table(object):
             # item.setTextAlignment(QtCore.Qt.AlignVCenter)
             table.setItem(i, col, item)
             col = 1
-            image_path = self.directory_path + self.pics_in_dir[i][0]
-            item = self.load_picture_in_item(image_path, col)
             item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)

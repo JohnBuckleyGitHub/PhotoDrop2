@@ -15,25 +15,15 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
-     <widget class="QLabel" name="label">
+    <item row="1" column="1">
+     <widget class="QPushButton" name="refresh_input_pushButton">
       <property name="text">
-       <string>Input Directory</string>
+       <string>Refresh Table</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLineEdit" name="input_directory_lineEdit"/>
-    </item>
-    <item row="0" column="4">
-     <widget class="QLabel" name="label_5">
-      <property name="text">
-       <string>Run Number</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QSpinBox" name="spinBox"/>
+    <item row="0" column="8">
+     <widget class="QLineEdit" name="input_directory_lineEdit_2"/>
     </item>
     <item row="0" column="7">
      <widget class="QLabel" name="label_2">
@@ -42,13 +32,30 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="8">
-     <widget class="QLineEdit" name="input_directory_lineEdit_2"/>
+    <item row="0" column="5">
+     <widget class="QSpinBox" name="spinBox"/>
     </item>
-    <item row="1" column="1">
-     <widget class="QPushButton" name="refresh_input_pushButton">
+    <item row="0" column="4">
+     <widget class="QLabel" name="label_5">
       <property name="text">
-       <string>Refresh Table</string>
+       <string>Run Number</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLineEdit" name="input_directory_lineEdit"/>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Input Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QPushButton" name="untransfer_input_trans_pushButton">
+      <property name="text">
+       <string>&lt;&lt;&lt;</string>
       </property>
      </widget>
     </item>
@@ -97,7 +104,7 @@
      </spacer>
     </item>
     <item row="2" column="1" rowspan="7" colspan="2">
-     <widget class="QTableWidget" name="in_dir_tableWidget">
+     <widget class="TableWithPaste" name="in_dir_tableWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -113,10 +120,10 @@
      </widget>
     </item>
     <item row="2" column="4" rowspan="4" colspan="2">
-     <widget class="QTableWidget" name="transfer_tableWidget"/>
+     <widget class="TableWithPaste" name="transfer_tableWidget"/>
     </item>
     <item row="2" column="7" rowspan="7" colspan="2">
-     <widget class="QTableWidget" name="in_dir_tableWidget_3"/>
+     <widget class="TableWithPaste" name="in_dir_tableWidget_3"/>
     </item>
     <item row="3" column="3">
      <widget class="QPushButton" name="transfer_input_trans_pushButton">
@@ -129,13 +136,6 @@
      <widget class="QPushButton" name="pushButton_3">
       <property name="text">
        <string>&gt;&gt;&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="3">
-     <widget class="QPushButton" name="untransfer_input_trans_pushButton">
-      <property name="text">
-       <string>&lt;&lt;&lt;</string>
       </property>
      </widget>
     </item>
@@ -203,6 +203,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableWithPaste</class>
+   <extends>QTableWidget</extends>
+   <header>table_with_paste.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

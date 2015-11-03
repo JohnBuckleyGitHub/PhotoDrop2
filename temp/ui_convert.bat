@@ -1,0 +1,1 @@
+C:\Anaconda3\Lib\site-packages\PyQt4\pyuic4 test_drag.ui > output.py
