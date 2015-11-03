@@ -3,6 +3,7 @@ import os
 import glob
 import time
 import datetime
+import fnmatch
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 sys.path.insert(0, 'C:/Python Files/pythonlibs')
@@ -25,6 +26,7 @@ class Pic_Dir_Table(object):
                                         ]
 
     def process_table_parameters(self):
+        self.picture_type_list = ['*.png', '*.jpg', '*.gif', '*.bmp', '*.tif', '*.tiff']
         self.colcount = len(self.table_params)
         self.row_height = None
         self.header_labels = []
@@ -48,11 +50,11 @@ class Pic_Dir_Table(object):
         # self.create_dir_table_data()
         table.setColumnCount(self.colcount)
         for col in range(self.colcount):
-            self.table.setColumnWidth(col, self.col_width[col])
+            table.setColumnWidth(col, self.col_width[col])
         table.horizontalHeader().setStretchLastSection(True)
         table.setHorizontalHeaderLabels(self.header_labels)
         table.horizontalHeader().setMovable(False)
-        for i in range(self.entry_count):
+        for i in range(len(self.pics_in_dir)):
             table.insertRow(i)
             table.setRowHeight(i, self.row_height)
             col = 0
@@ -71,28 +73,40 @@ class Pic_Dir_Table(object):
 
     def create_dir_table_data(self):
         self.directory_path = kustomWidgets.dir_clean(self.directory_lineEdit.text())
-        picture_type_list = ['*.png', '*.jpg', '*.gif', '*.bmp']
         self.create_empty_table()
-        for pic_type in picture_type_list:
+        for pic_type in self.picture_type_list:
             tl = glob.glob(self.directory_path + '/' + pic_type)
-            for inst in tl:
-                filename = os.path.basename(inst)
-                creation_time = self.get_creation_times(filename)
-                self.pics_in_dir.append([filename, creation_time, inst])
-                self.entry_count += 1
+            for file_path in tl:
+                filename = os.path.basename(file_path)
+                creation_time = self.get_creation_times(file_path)
+                self.pics_in_dir.append([filename, creation_time, file_path])
         self.pics_in_dir = sorted(self.pics_in_dir, key=lambda x: x[1])
+
+    def append_dir_table(self, file_path):
+        for pic_type in self.picture_type_list:
+            if fnmatch.fnmatch(file_path, pic_type):
+                print("we have a match!")
+                filename = os.path.basename(file_path)
+                creation_time = self.get_creation_times(file_path)
+                self.pics_in_dir.append([filename, creation_time, file_path])
+            else:
+                print("no dice!")
+        self.table_from_list()
+
+    def append_from_event(self, event):
+        for urls in event.mimeData().urls():
+            file_path = urls.path()[1:]
+            self.append_dir_table(file_path)
+            print(file_path)
 
     def add_selections(self, transfer_list):
         for flist in transfer_list:
             self.pics_in_dir.append(flist)
-            self.entry_count += 1
 
     def create_empty_table(self):
         self.pics_in_dir = []
-        self.entry_count = 0
 
-    def get_creation_times(self, filename):
-        fullname = self.directory_path + filename
+    def get_creation_times(self, fullname):
         c_time_sec = os.path.getctime(fullname)
         c_time_struct = datetime.datetime.fromtimestamp(c_time_sec)
         c_time_string = time.strftime("%Y.%m.%d \n%H:%M:%S", c_time_struct.timetuple())
@@ -107,7 +121,7 @@ class Pic_Dir_Table(object):
         return item
 
     def load_picture(self, row, col):
-        file_path = '"' + self.directory_path + self.pics_in_dir[row][0] + '"'
+        file_path = '"' + self.pics_in_dir[row][2] + '"'
         os.system(file_path)
 
     def browse_directory(self):
