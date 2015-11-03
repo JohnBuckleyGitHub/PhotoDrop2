@@ -72,10 +72,9 @@ class TableWithPaste(QtGui.QTableWidget):
 
     def getPastin(self):
         cboard = QtGui.qApp.clipboard().mimeData()
-        if cboard.hasUrls:
+        if cboard.hasUrls():
             self.itemUrlPasted.emit(cboard)
-        # elif cboard.hasImage():
-        elif cboard.hasImage:
+        elif cboard.hasImage():
             self.itemImagePasted.emit(cboard)
             # print("Business!!!")
             # new_row_number = self.rowCount()

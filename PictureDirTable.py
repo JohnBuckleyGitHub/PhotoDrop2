@@ -85,19 +85,45 @@ class Pic_Dir_Table(object):
     def append_dir_table(self, file_path):
         for pic_type in self.picture_type_list:
             if fnmatch.fnmatch(file_path, pic_type):
-                print("we have a match!")
                 filename = os.path.basename(file_path)
                 creation_time = self.get_creation_times(file_path)
                 self.pics_in_dir.append([filename, creation_time, file_path])
-            else:
-                print("no dice!")
         self.table_from_list()
 
     def append_from_event(self, event):
-        for urls in event.mimeData().urls():
-            file_path = urls.path()[1:]
-            self.append_dir_table(file_path)
-            print(file_path)
+        if type(event) == QtGui.QDropEvent:
+            for urls in event.mimeData().urls():
+                file_path = urls.path()[1:]
+                self.append_dir_table(file_path)
+        elif type(event) == QtCore.QMimeData:
+            for urls in event.urls():
+                file_path = urls.path()[1:]
+                self.append_dir_table(file_path)
+        elif type(event) == str:
+            self.append_dir_table(event)
+
+    def save_image_from_paste(self, mime_data):
+        file_format = 'png'
+        qi = QtGui.QImageWriter()
+        qi.setFormat(file_format)
+        new_file = self.highest_temp(file_format)
+        qi.setFileName(new_file)
+        qi.write(mime_data.imageData())
+        self.append_from_event(new_file)
+
+
+    def highest_temp(self, file_format):
+        file_prefix = 'Temp_'
+        tl = glob.glob(self.directory_path + '/' + file_prefix + '*')
+        zeroes = 5
+        for i in range(10 ** zeroes):
+            z = kustomWidgets.zeronater(i, zeroes)
+            if i >= len(tl):
+                break
+            if (z in os.path.basename(tl[i])) is False:
+                break
+        new_file = self.directory_path + '/' + file_prefix + z + '.' + file_format
+        return new_file
 
     def add_selections(self, transfer_list):
         for flist in transfer_list:
