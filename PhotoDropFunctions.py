@@ -1,3 +1,5 @@
+from PyQt4 import QtGui
+from PyQt4 import QtCore
 import PictureDirTable
 
 
@@ -26,3 +28,14 @@ class pd_ui_class(PictureDirTable.Pic_Dir_Table):
         transfer_list = self.input_table.transfer_selection()
         self.transfer_table.add_selections(transfer_list)
         self.transfer_table.table_from_list()
+        self.input_table.table_from_list()
+
+    def image_paste_into_transfer(self, mime_data):
+        self.parent.in_dir_tableWidget.itemImagePasted.emit(mime_data)
+        last_row = self.parent.in_dir_tableWidget.rowCount() - 1
+        for col in range(self.parent.in_dir_tableWidget.columnCount()):
+            self.parent.in_dir_tableWidget.item(last_row, col).setSelected(True)
+        self.input_transfer_selection()
+
+    def select_first_row(self):
+        self.my_tableWidget

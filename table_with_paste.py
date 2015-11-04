@@ -7,7 +7,7 @@ class TableWithPaste(QtGui.QTableWidget):
     itemDropped = QtCore.pyqtSignal(object)
     itemUrlPasted = QtCore.pyqtSignal(object)
     itemImagePasted = QtCore.pyqtSignal(object)
-
+    itemImageDelete = QtCore.pyqtSignal(object)
 
     def __init__(self, parent):
         QtGui.QTableWidget.__init__(self, parent)
@@ -16,25 +16,27 @@ class TableWithPaste(QtGui.QTableWidget):
         self.setAcceptDrops(True)
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
 
-        quitAction = QtGui.QAction("Quit", self)
-        quitAction.triggered.connect(QtGui.qApp.quit)
+        # quitAction = QtGui.QAction("Quit", self)
+        # quitAction.triggered.connect(QtGui.qApp.quit)
 
         pasteAction = QtGui.QAction("Paste", self)
         pasteAction.triggered.connect(self.getPastin)
+
+        deleteAction = QtGui.QAction("Delete", self)
+        deleteAction.triggered.connect(self.deletePicFile)
+
         self.addAction(pasteAction)
-        self.addAction(quitAction)
-
-
+        self.addAction(deleteAction)
+        # self.addAction(quitAction)
 
     def dragEnterEvent(self, event):
-        # if e.mimeData().hasFormat('text/plain'):
         if event.mimeData().hasUrls:
             event.accept()
         else:
             event.ignore()
 
     def dragMoveEvent(self, event):
-        if event.mimeData().hasUrls:  # hasFormat('text/plain'):
+        if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
         else:
@@ -45,52 +47,16 @@ class TableWithPaste(QtGui.QTableWidget):
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
             self.itemDropped.emit(event)
-            # new_row_number = self.rowCount()
-            # self.insertRow(new_row_number)
-            # col = 0
-            # print(event.mimeData().urls()[0].toString())
-            # self.item = QtGui.QTableWidgetItem(event.mimeData().urls()[0].path()[1:])
-            # self.item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-            # self.setItem(new_row_number, col, self.item)
-            # col = 1
-            # col_width = self.columnWidth(col)
-            # row_height = self.rowHeight(new_row_number)
-            # image = QtGui.QImage(event.mimeData().imageData)
-            # if image.isNull():
-            #     print("Image is Null :(")
-            # else:
-            #     image_scaled = image.scaled(col_width, row_height, QtCore.Qt.KeepAspectRatio)
-            #     pixmap = QtGui.QPixmap.fromImage(image_scaled)
-            #     self.item = QtGui.QTableWidgetItem()
-            #     self.item.setData(QtCore.Qt.DecorationRole, pixmap)
-            #     self.item.setTextAlignment(QtCore.Qt.AlignCenter)
-            #     self.item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-            #     self.setItem(new_row_number, col, self.item)
-            # print("finish")
         else:
             event.ignore()
 
     def getPastin(self):
-        cboard = QtGui.qApp.clipboard().mimeData()
-        if cboard.hasUrls():
-            self.itemUrlPasted.emit(cboard)
-        elif cboard.hasImage():
-            self.itemImagePasted.emit(cboard)
-            # print("Business!!!")
-            # new_row_number = self.rowCount()
-            # row_height = self.rowHeight(new_row_number-1)
-            # self.insertRow(new_row_number)
-            # self.setRowHeight(new_row_number, row_height)
-            # col = 1
-            # col_width = self.columnWidth(col)
-            # image = QtGui.QImage(cboard.imageData())
-            # if image.isNull():
-            #     print("Image is Null :(")
-            # else:
-            #     image_scaled = image.scaled(col_width, row_height, QtCore.Qt.KeepAspectRatio)
-            #     pixmap = QtGui.QPixmap.fromImage(image_scaled)
-            #     self.item = QtGui.QTableWidgetItem()
-            #     self.item.setData(QtCore.Qt.DecorationRole, pixmap)
-            #     self.item.setTextAlignment(QtCore.Qt.AlignCenter)
-            #     self.item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-            #     self.setItem(new_row_number, col, self.item)
+        clipboard = QtGui.qApp.clipboard().mimeData()
+        if clipboard.hasUrls():
+            self.itemUrlPasted.emit(clipboard)
+        elif clipboard.hasImage():
+            self.itemImagePasted.emit(clipboard)
+
+    def deletePicFile(self):
+        indices = self.selectionModel().selectedRows()
+        self.itemImageDelete.emit(indices)

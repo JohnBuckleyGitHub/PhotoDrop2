@@ -26,21 +26,17 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         self.browse_input_pushButton.clicked.connect(self.tables.input_table.browse_directory)
         self.refresh_input_pushButton.clicked.connect(self.tables.input_table.refresh_table)
         self.transfer_input_trans_pushButton.clicked.connect(self.tables.input_transfer_selection)
+
         self.in_dir_tableWidget.itemDropped.connect(self.tables.input_table.append_from_event)
         self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
         self.in_dir_tableWidget.itemImagePasted.connect(self.tables.input_table.save_image_from_paste)
-        # print(transfer_list)
-        #  self.create_wrl_pushButton.clicked.connect(self.get_box_contents)
-        #  self.max_color_horizontalSlider.valueChanged.connect(self.slider_change)
-        #  self.color_spinBox.valueChanged.connect(self.spinbox_change)
+        self.in_dir_tableWidget.itemImageDelete.connect(self.tables.input_table.delete_selection)
 
-    # def me_rows(self, row, col):
-    #     print(row)
-    #     print(col)
-    #     self.input_dir.load_picture( row, col)
+        self.transfer_tableWidget.itemDropped.connect(self.tables.transfer_table.append_from_event)
+        self.transfer_tableWidget.itemUrlPasted.connect(self.tables.transfer_table.append_from_event)
+        self.transfer_tableWidget.itemImagePasted.connect(self.tables.image_paste_into_transfer)
+        self.transfer_tableWidget.itemImageDelete.connect(self.tables.transfer_table.delete_selection)
 
-    def print_excl(self):
-        print("Holy Awesomeness!!!")
 
 
 

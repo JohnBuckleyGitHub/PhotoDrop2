@@ -111,7 +111,6 @@ class Pic_Dir_Table(object):
         qi.write(mime_data.imageData())
         self.append_from_event(new_file)
 
-
     def highest_temp(self, file_format):
         file_prefix = 'Temp_'
         tl = glob.glob(self.directory_path + '/' + file_prefix + '*')
@@ -161,9 +160,17 @@ class Pic_Dir_Table(object):
         self.table_from_list()
 
     def transfer_selection(self):
-        indices = self.table.selectionModel().selectedRows()
         transfer_list = []
+        indices = self.table.selectionModel().selectedRows()
         for index in indices:
             transfer_list.append(self.pics_in_dir[index.row()])
+            del self.pics_in_dir[index.row()]
         return transfer_list
+
+    def delete_selection(self, indices):
+        indices = sorted(indices, key=lambda x: x.row(), reverse=True)
+        for del_num in indices:
+            os.remove(self.pics_in_dir[del_num.row()][2])
+            del self.pics_in_dir[del_num.row()]
+        self.table_from_list()
 
