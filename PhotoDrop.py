@@ -26,6 +26,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         self.browse_input_pushButton.clicked.connect(self.tables.input_table.browse_directory)
         self.refresh_input_pushButton.clicked.connect(self.tables.input_table.refresh_table)
         self.transfer_input_trans_pushButton.clicked.connect(self.tables.input_transfer_selection)
+        self.untransfer_input_trans_pushButton.clicked.connect(self.tables.input_untransfer_selection)
 
         self.in_dir_tableWidget.itemDropped.connect(self.tables.input_table.append_from_event)
         self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
@@ -35,7 +36,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         self.transfer_tableWidget.itemDropped.connect(self.tables.transfer_table.append_from_event)
         self.transfer_tableWidget.itemUrlPasted.connect(self.tables.transfer_table.append_from_event)
         self.transfer_tableWidget.itemImagePasted.connect(self.tables.image_paste_into_transfer)
-        self.transfer_tableWidget.itemImageDelete.connect(self.tables.transfer_table.delete_selection)
+        self.transfer_tableWidget.itemImageDelete.connect(self.tables.input_untransfer_selection)
 
 
 

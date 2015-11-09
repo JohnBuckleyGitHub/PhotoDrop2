@@ -1,5 +1,6 @@
 import sys
 import os
+from send2trash import send2trash
 import glob
 import time
 import datetime
@@ -13,8 +14,8 @@ import kustomPalette
 
 class Pic_Dir_Table(object):
 
-    def __init__(self):
-        self.parent = None
+    def __init__(self, parent):
+        self.parent = parent
         self.table_parameters()
         self.process_table_parameters()
 
@@ -162,15 +163,18 @@ class Pic_Dir_Table(object):
     def transfer_selection(self):
         transfer_list = []
         indices = self.table.selectionModel().selectedRows()
+        indices = sorted(indices, key=lambda x: x.row(), reverse=True)
         for index in indices:
             transfer_list.append(self.pics_in_dir[index.row()])
             del self.pics_in_dir[index.row()]
         return transfer_list
 
-    def delete_selection(self, indices):
+    def delete_selection(self):
+        indices = self.table.selectionModel().selectedRows()
         indices = sorted(indices, key=lambda x: x.row(), reverse=True)
         for del_num in indices:
-            os.remove(self.pics_in_dir[del_num.row()][2])
+            # os.remove(self.pics_in_dir[del_num.row()][2])
+            send2trash(self.pics_in_dir[del_num.row()][2])
             del self.pics_in_dir[del_num.row()]
         self.table_from_list()
 
