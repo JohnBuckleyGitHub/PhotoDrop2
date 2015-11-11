@@ -16,6 +16,7 @@ class Pic_Dir_Table(object):
 
     def __init__(self, parent):
         self.parent = parent
+        self.checkbox = None
         self.table_parameters()
         self.process_table_parameters()
 
@@ -25,6 +26,7 @@ class Pic_Dir_Table(object):
                                         ['Filename', 150, None],
                                         ['Image', 300, 200],
                                         ]
+        self.no_check_row_height = 40
 
     def process_table_parameters(self):
         self.picture_type_list = ['*.png', '*.jpg', '*.gif', '*.bmp', '*.tif', '*.tiff']
@@ -57,18 +59,37 @@ class Pic_Dir_Table(object):
         table.horizontalHeader().setMovable(False)
         for i in range(len(self.pics_in_dir)):
             table.insertRow(i)
-            table.setRowHeight(i, self.row_height)
+            if self.checkbox.isChecked():
+                table.setRowHeight(i, self.row_height)
+                full_text = self.pics_in_dir[i][0] + "\n \n \n" + self.pics_in_dir[i][1]
+            else:
+                table.setRowHeight(i, self.no_check_row_height)
+                full_text = self.pics_in_dir[i][0]
             col = 0
             full_text = self.pics_in_dir[i][0] + "\n \n \n" + self.pics_in_dir[i][1]
             item = QtGui.QTableWidgetItem(full_text)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+            # if self.pics_in_dir[i][3]:
+            # #     item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+            #     item.setBackground(self.parent.brush.nobrush)
+            # # else:
+            # #     item.setFlags(QtCore.Qt.ItemIsEnabled)
+            #     item.setBackground(self.parent.brush.grey)
             item.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
             # item.setTextAlignment(QtCore.Qt.AlignVCenter)
             table.setItem(i, col, item)
             col = 1
-            item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
+            if self.checkbox.isChecked():
+                item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
+            else:
+                item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+            # if self.pics_in_dir[i][3]:
+            #     item.setBackground(self.parent.brush.nobrush)
+            # else:
+            # #     item.setFlags(QtCore.Qt.ItemIsEnabled)
+            #     item.setBackground(self.parent.brush.grey)
             table.setItem(i, col, item)
         table.setSelectionBehavior(table.SelectRows)
 
@@ -80,7 +101,7 @@ class Pic_Dir_Table(object):
             for file_path in tl:
                 filename = os.path.basename(file_path)
                 creation_time = self.get_creation_times(file_path)
-                self.pics_in_dir.append([filename, creation_time, file_path])
+                self.pics_in_dir.append([filename, creation_time, file_path, True])
         self.pics_in_dir = sorted(self.pics_in_dir, key=lambda x: x[1])
 
     def append_dir_table(self, file_path):
@@ -88,7 +109,7 @@ class Pic_Dir_Table(object):
             if fnmatch.fnmatch(file_path, pic_type):
                 filename = os.path.basename(file_path)
                 creation_time = self.get_creation_times(file_path)
-                self.pics_in_dir.append([filename, creation_time, file_path])
+                self.pics_in_dir.append([filename, creation_time, file_path, True])
         self.table_from_list()
 
     def append_from_event(self, event):
@@ -127,6 +148,7 @@ class Pic_Dir_Table(object):
 
     def add_selections(self, transfer_list):
         for flist in transfer_list:
+            # flist[3] = True
             self.pics_in_dir.append(flist)
 
     def create_empty_table(self):
@@ -165,8 +187,12 @@ class Pic_Dir_Table(object):
         indices = self.table.selectionModel().selectedRows()
         indices = sorted(indices, key=lambda x: x.row(), reverse=True)
         for index in indices:
-            transfer_list.append(self.pics_in_dir[index.row()])
+            transfer_row = []
+            for item in self.pics_in_dir[index.row()]:
+                transfer_row.append(item)
+            transfer_list.append(transfer_row)
             del self.pics_in_dir[index.row()]
+            # self.pics_in_dir[index.row()][3] = False
         return transfer_list
 
     def delete_selection(self):
@@ -177,4 +203,3 @@ class Pic_Dir_Table(object):
             send2trash(self.pics_in_dir[del_num.row()][2])
             del self.pics_in_dir[del_num.row()]
         self.table_from_list()
-

@@ -3,7 +3,6 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4 import uic
 import ctypes
-import io
 sys.path.insert(0, 'C:/Python Files/pythonlibs')
 import kustomWidgets
 import PhotoDropFunctions
@@ -32,13 +31,21 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
         self.in_dir_tableWidget.itemImagePasted.connect(self.tables.input_table.save_image_from_paste)
         self.in_dir_tableWidget.itemImageDelete.connect(self.tables.input_table.delete_selection)
+        self.input_checkBox.clicked.connect(self.tables.input_table.table_from_list)
 
         self.transfer_tableWidget.itemDropped.connect(self.tables.transfer_table.append_from_event)
         self.transfer_tableWidget.itemUrlPasted.connect(self.tables.transfer_table.append_from_event)
         self.transfer_tableWidget.itemImagePasted.connect(self.tables.image_paste_into_transfer)
         self.transfer_tableWidget.itemImageDelete.connect(self.tables.input_untransfer_selection)
+        self.transfer_checkBox.clicked.connect(self.tables.transfer_table.table_from_list)
 
+        self.out_dir_tableWidget.cellDoubleClicked.connect(self.tables.output_table.load_picture)
+        self.browse_output_pushButton.clicked.connect(self.tables.output_table.browse_directory)
+        self.refresh_output_pushButton.clicked.connect(self.tables.output_table.refresh_table)
+        self.transfer_output_trans_pushButton.clicked.connect(self.tables.output_transfer_selection)
+        self.untransfer_output_trans_pushButton.clicked.connect(self.tables.output_untransfer_selection)
 
+        self.output_checkBox.clicked.connect(self.tables.output_table.table_from_list)
 
 
 if __name__ == '__main__':
