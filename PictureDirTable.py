@@ -125,7 +125,7 @@ class Pic_Dir_Table(object):
             self.append_dir_table(event)
 
     def save_image_from_paste(self, mime_data):
-        file_format = 'png'
+        file_format = 'jpg'
         qi = QtGui.QImageWriter()
         qi.setFormat(file_format)
         new_file = self.highest_temp(file_format)

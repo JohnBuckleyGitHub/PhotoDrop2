@@ -22,7 +22,7 @@ class TableWithPaste(QtGui.QTableWidget):
         pasteAction = QtGui.QAction("Paste", self)
         pasteAction.triggered.connect(self.getPastin)
 
-        deleteAction = QtGui.QAction("Delete", self)
+        deleteAction = QtGui.QAction("Delete File", self)
         deleteAction.triggered.connect(self.deletePicFile)
 
         self.addAction(pasteAction)

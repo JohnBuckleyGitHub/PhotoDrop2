@@ -4,6 +4,8 @@ from PyQt4 import QtCore
 import PictureDirTable
 import time
 import math
+import shutil
+from send2trash import send2trash
 
 
 class pd_ui_class(PictureDirTable.Pic_Dir_Table):
@@ -65,15 +67,19 @@ class pd_ui_class(PictureDirTable.Pic_Dir_Table):
         transfer_list = self.transfer_table.transfer_selection()
         output_path = self.output_table.directory_lineEdit.text()
         increment_letter = self.parent.increment_letter_lineEdit.text()
-        count = 0
         for i in range(len(transfer_list)):
             file_item = transfer_list[i]
-            increment_letter = increment_letter
             file_type = file_item[0][file_item[0].find('.'):]
-            new_name = (self.parent.prefix_lineEdit.text() + self.parent.run_number_spinBox.text() +
-                        increment_letter + file_type)
-            new_file = output_path + '/' + new_name
-            os.rename(file_item[2], new_file)
+            for j in range(1000):
+                inc_letter = letter_increment(increment_letter, j+1)
+                new_name = (self.parent.prefix_lineEdit.text() + self.parent.run_number_spinBox.text() +
+                            inc_letter + file_type)
+                new_file = output_path + '/' + new_name
+                if os.path.exists(new_file) is False:
+                    break
+            # os.rename(file_item[2], new_file)
+            shutil.copy2(file_item[2], new_file)
+            send2trash(file_item[2])
             file_item[0] = os.path.basename(new_file)
             file_item[2] = new_file
             transfer_list[i] = file_item
@@ -87,7 +93,18 @@ class pd_ui_class(PictureDirTable.Pic_Dir_Table):
         for i in range(len(transfer_list)):
             file_item = transfer_list[i]
             new_file = input_path + '/' + file_item[0]
-            os.rename(file_item[2], new_file)
+            if os.path.exists(new_file):
+                dot_place = new_file.find('.')
+                file_type = new_file[dot_place:]
+                file_root = new_file[:dot_place]
+                increment_letter = self.parent.increment_letter_lineEdit.text()
+                for j in range(1000):
+                    new_file = file_root + letter_increment(increment_letter, j) + file_type
+                    if os.path.exists(new_file) is False:
+                        break
+            # os.rename(file_item[2], new_file)
+            shutil.copy2(file_item[2], new_file)
+            send2trash(file_item[2])
             file_item[0] = os.path.basename(new_file)
             file_item[2] = new_file
             transfer_list[i] = file_item
@@ -95,44 +112,51 @@ class pd_ui_class(PictureDirTable.Pic_Dir_Table):
         self.transfer_table.table_from_list()
         self.output_table.table_from_list()
 
-# def letter_increment(letters, increment):
-#     alphabet = 'abcdefghijklmnopqrstuvwxyz'
-#     base = len(alphabet)
-#     new_places = math.log(increment)/math.log(base)
-#     old_places = len(letters)
-#     carry_int = 0
-#     new_string = ''
-#     for place in range(old_places)
-#         last_letter =  letters[place-1:place]
-#         loc = alphabet.find(letter)+increment + carry_int
-#         new_letter = alphabet[loc:loc+1]
-#         carry_int = int(loc/base)
-#     new_letter = 1
+
+def letter_increment(letters, increment):
+    init_value = alpha2num(letters.lower())
+    # places = len(letters)
+    new_letters = num2alpha(init_value + increment)
+    # new_places = len(new_letters)
+    # if (places - new_places) > 0:
+    #     new_letters = letters[:places-new_places] + new_letters
+    if letters.isupper():
+        new_letters = new_letters.upper()
+    return new_letters
+
 
 def alpha2num(letters):
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    abet = alphabet()
+    base = len(abet)
     alpha_places = len(letters)
-    total = 1
+    total = 0
     for place in range(alpha_places):
-        cur_letter =  letters[alpha_places - place - 1]
-        loc = alphabet.find(cur_letter)
-        total += loc
+        cur_letter = letters[alpha_places - place - 1]
+        loc = abet.find(cur_letter) + 1
+        total += (loc*(base**place))
     return total
 
-def num2alpha(number):
-    if number == 0:
-        return 0
-    elif number < 0:
-        number = number * -1
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
-    base = len(alphabet)
-    places = int(math.log(number)/math.log(base)+1)
-    alpha_str = ''
-    for numeral in range(places):
-        remainder = number % (base ** (numeral+1))
-        number -= remainder
-        letter = alphabet[remainder-1]
-        alpha_str = letter + alpha_str
-    return alpha_str
+# def baseN(num, b, numerals=alphabet()):
+#     return (((num == 0) and numerals[0]) or
+#             (baseN(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b]))
 
+
+def num2alpha(num):
+    numerals = alphabet()
+    base = len(numerals)
+    s = ''
+    if num == 0:
+        return 0
+    num -= 1  # since 0 is 0 and A is 1
+    for i in range(20):
+        s = numerals[int(num % base)] + s
+        num = num / base
+        if num < 1:
+            break
+        num -= 1
+    return s
+
+
+def alphabet():
+    return 'abcdefghijklmnopqrstuvwxyz'
 
