@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1098</width>
+    <width>1460</width>
     <height>1045</height>
    </rect>
   </property>
@@ -15,6 +15,20 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="3">
+     <widget class="QCheckBox" name="input_checkBox">
+      <property name="text">
+       <string>Load Pictures</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="9">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Storage Directory</string>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="1">
      <widget class="QPushButton" name="refresh_input_pushButton">
       <property name="text">
@@ -22,44 +36,34 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="8">
-     <widget class="QLineEdit" name="input_directory_lineEdit_2"/>
-    </item>
-    <item row="0" column="7">
-     <widget class="QLabel" name="label_2">
+    <item row="6" column="5">
+     <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Storage Directory</string>
+       <string>Prefix</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="5">
-     <widget class="QSpinBox" name="spinBox">
-      <property name="maximum">
-       <number>99999</number>
+    <item row="3" column="4">
+     <widget class="QPushButton" name="transfer_input_trans_pushButton">
+      <property name="text">
+       <string>&gt;&gt;&gt;</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
-     <widget class="QLabel" name="label_5">
+    <item row="1" column="7">
+     <widget class="QCheckBox" name="transfer_checkBox">
       <property name="text">
-       <string>Run Number</string>
+       <string>Load Pictures</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLineEdit" name="input_directory_lineEdit"/>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Input Directory</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="3">
-     <widget class="QPushButton" name="untransfer_input_trans_pushButton">
-      <property name="text">
-       <string>&lt;&lt;&lt;</string>
+    <item row="2" column="9" rowspan="7" colspan="3">
+     <widget class="TableWithPaste" name="out_dir_tableWidget">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>700</height>
+       </size>
       </property>
      </widget>
     </item>
@@ -70,24 +74,84 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="4" colspan="2">
-     <widget class="QPushButton" name="refresh_pushButton_6">
-      <property name="text">
-       <string>Last Run</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="7">
-     <widget class="QPushButton" name="refresh_storage_pushButton">
+    <item row="1" column="9">
+     <widget class="QPushButton" name="refresh_output_pushButton">
       <property name="text">
        <string>Refresh Table</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="8">
-     <widget class="QPushButton" name="browse_storage_pushButton">
+    <item row="0" column="2" colspan="2">
+     <widget class="QLineEdit" name="input_directory_lineEdit"/>
+    </item>
+    <item row="1" column="11">
+     <widget class="QCheckBox" name="output_checkBox">
       <property name="text">
-       <string>Browse Storage Directory</string>
+       <string>Load Pictures</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="4">
+     <widget class="QPushButton" name="untransfer_input_trans_pushButton">
+      <property name="text">
+       <string>&lt;&lt;&lt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="8">
+     <widget class="QPushButton" name="transfer_output_trans_pushButton">
+      <property name="text">
+       <string>&gt;&gt;&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Run Number</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="10">
+     <widget class="QPushButton" name="browse_output_pushButton">
+      <property name="text">
+       <string>Browse Output Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="12">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Preferred</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>12</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Input Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="6" colspan="2">
+     <widget class="QLineEdit" name="increment_letter_lineEdit"/>
+    </item>
+    <item row="2" column="5" rowspan="4" colspan="3">
+     <widget class="TableWithPaste" name="transfer_tableWidget">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>700</height>
+       </size>
       </property>
      </widget>
     </item>
@@ -107,7 +171,14 @@
       </property>
      </spacer>
     </item>
-    <item row="2" column="1" rowspan="7" colspan="2">
+    <item row="8" column="5" colspan="2">
+     <widget class="QPushButton" name="database_settings_pushButton">
+      <property name="text">
+       <string>Run Database Settings</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" rowspan="7" colspan="3">
      <widget class="TableWithPaste" name="in_dir_tableWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -117,81 +188,48 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>500</width>
-        <height>0</height>
+        <width>300</width>
+        <height>700</height>
        </size>
       </property>
      </widget>
     </item>
-    <item row="2" column="4" rowspan="4" colspan="2">
-     <widget class="TableWithPaste" name="transfer_tableWidget"/>
+    <item row="0" column="10" colspan="2">
+     <widget class="QLineEdit" name="output_directory_lineEdit"/>
     </item>
-    <item row="2" column="7" rowspan="7" colspan="2">
-     <widget class="TableWithPaste" name="in_dir_tableWidget_3"/>
-    </item>
-    <item row="3" column="3">
-     <widget class="QPushButton" name="transfer_input_trans_pushButton">
-      <property name="text">
-       <string>&gt;&gt;&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="6">
-     <widget class="QPushButton" name="pushButton_3">
-      <property name="text">
-       <string>&gt;&gt;&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="6">
-     <widget class="QPushButton" name="pushButton_4">
+    <item row="4" column="8">
+     <widget class="QPushButton" name="untransfer_output_trans_pushButton">
       <property name="text">
        <string>&lt;&lt;&lt;</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="9">
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Preferred</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>12</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="6" column="4">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Prefix</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="5">
-     <widget class="QLineEdit" name="input_directory_lineEdit_3"/>
-    </item>
-    <item row="7" column="4">
+    <item row="7" column="5">
      <widget class="QLabel" name="label_4">
       <property name="text">
        <string>Increment Letter</string>
       </property>
      </widget>
     </item>
-    <item row="7" column="5">
-     <widget class="QLineEdit" name="input_directory_lineEdit_4"/>
-    </item>
-    <item row="8" column="4" colspan="2">
-     <widget class="QPushButton" name="refresh_pushButton_5">
+    <item row="0" column="7">
+     <widget class="QPushButton" name="last_run_pushButton">
       <property name="text">
-       <string>Run Database Settings</string>
+       <string>Last Run</string>
       </property>
      </widget>
+    </item>
+    <item row="0" column="6">
+     <widget class="QSpinBox" name="run_number_spinBox">
+      <property name="maximum">
+       <number>99999</number>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="6" colspan="2">
+     <widget class="QLineEdit" name="prefix_lineEdit"/>
+    </item>
+    <item row="1" column="4">
+     <widget class="QComboBox" name="comboBox"/>
     </item>
    </layout>
   </widget>
@@ -200,7 +238,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1098</width>
+     <width>1460</width>
      <height>21</height>
     </rect>
    </property>

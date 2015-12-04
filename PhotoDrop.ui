@@ -81,9 +81,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2" colspan="2">
-     <widget class="QLineEdit" name="input_directory_lineEdit"/>
-    </item>
     <item row="1" column="11">
      <widget class="QCheckBox" name="output_checkBox">
       <property name="text">
@@ -194,9 +191,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="10" colspan="2">
-     <widget class="QLineEdit" name="output_directory_lineEdit"/>
-    </item>
     <item row="4" column="8">
      <widget class="QPushButton" name="untransfer_output_trans_pushButton">
       <property name="text">
@@ -227,6 +221,12 @@
     </item>
     <item row="6" column="6" colspan="2">
      <widget class="QLineEdit" name="prefix_lineEdit"/>
+    </item>
+    <item row="0" column="2" colspan="2">
+     <widget class="QComboBox" name="input_directory_comboBox"/>
+    </item>
+    <item row="0" column="10" colspan="2">
+     <widget class="QComboBox" name="output_directory_comboBox"/>
     </item>
    </layout>
   </widget>

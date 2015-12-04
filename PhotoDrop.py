@@ -29,9 +29,13 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
 
         self.in_dir_tableWidget.itemDropped.connect(self.tables.input_table.append_from_event)
         self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
+        self.in_dir_tableWidget.itemImageScaled.connect(self.tables.load_item)
         self.in_dir_tableWidget.itemImagePasted.connect(self.tables.input_table.save_image_from_paste)
         self.in_dir_tableWidget.itemImageDelete.connect(self.tables.input_table.delete_selection)
         self.input_checkBox.clicked.connect(self.tables.input_table.table_from_list)
+        # self.comboBox.setInsertPolicy(QtGui.QComboBox.InsertAtTop)
+        # self.comboBox.setEditable(True)
+        # self.comboBox.activated.connect(self.print_comboBox)
 
         self.transfer_tableWidget.itemDropped.connect(self.tables.transfer_table.append_from_event)
         self.transfer_tableWidget.itemUrlPasted.connect(self.tables.transfer_table.append_from_event)
@@ -46,6 +50,19 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         self.untransfer_output_trans_pushButton.clicked.connect(self.tables.output_untransfer_selection)
 
         self.output_checkBox.clicked.connect(self.tables.output_table.table_from_list)
+
+    def print_comboBox(self, index_num):
+        print("Current index is:" + str(self.comboBox.currentIndex()))
+        print("Current test is:" + str(self.comboBox.currentText()))
+        print("\n\n\n")
+        # stored_value = self.comboBox.currentIndex()
+        # for i in range(self.comboBox.count()):
+        #     self.comboBox.setCurrentIndex(i)
+        #     print(self.comboBox.currentText())
+        print([self.comboBox.itemText(i) for i in range(self.comboBox.count())])
+        print("\n\n\n")
+        # self.comboBox.setCurrentIndex(stored_value)
+
 
 
 if __name__ == '__main__':

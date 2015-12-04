@@ -5,6 +5,7 @@ import glob
 import time
 import datetime
 import fnmatch
+import threading
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 sys.path.insert(0, 'C:/Python Files/pythonlibs')
@@ -19,6 +20,7 @@ class Pic_Dir_Table(object):
         self.checkbox = None
         self.table_parameters()
         self.process_table_parameters()
+        self.mainThread = QtCore.QThread.currentThread()
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -80,7 +82,14 @@ class Pic_Dir_Table(object):
             table.setItem(i, col, item)
             col = 1
             if self.checkbox.isChecked():
-                item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
+                # item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
+                item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
+                self.load_picture_from_thread(self.pics_in_dir[i][2], i, col)
+                # self.thread = QtCore.QThread()
+                # image_thread = self.threaded_picture_loader(self, i, self.pics_in_dir[i][2], self.row_height,
+                #                                             self.col_width[col], col)
+                # self.threads += [image_thread]
+                # image_thread.start()
             else:
                 item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
             item.setTextAlignment(QtCore.Qt.AlignCenter)
@@ -94,7 +103,8 @@ class Pic_Dir_Table(object):
         table.setSelectionBehavior(table.SelectRows)
 
     def create_dir_table_data(self):
-        self.directory_path = kustomWidgets.dir_clean(self.directory_lineEdit.text())
+        # self.directory_path = kustomWidgets.dir_clean(self.directory_lineEdit.text())
+        self.directory_path = kustomWidgets.dir_clean(self.directory_comboBox.currentText())
         self.create_empty_table()
         for pic_type in self.picture_type_list:
             tl = glob.glob(self.directory_path + '/' + pic_type)
@@ -168,14 +178,27 @@ class Pic_Dir_Table(object):
         item.setData(QtCore.Qt.DecorationRole, pixmap)
         return item
 
+    def load_picture_from_thread(self, image_path, row_number, col_number):
+        thread = LoadImageThread(image_path, self.col_width[col_number], self.row_height, row_number)
+        self.connect(thread, QtCore.SIGNAL("showImage(QString, int, int)"), self.showImage)
+        thread.start()
+
+    def show_picture_in_item()
+        pixmap = QtGui.QPixmap.fromImage(image_scaled)
+        item = QtGui.QTableWidgetItem()
+        item.setData(QtCore.Qt.DecorationRole, pixmap)
+        return item
+
     def load_picture(self, row, col):
         file_path = '"' + self.pics_in_dir[row][2] + '"'
         os.system(file_path)
 
     def browse_directory(self):
         new_directory_path = QtGui.QFileDialog.getExistingDirectory()
-        self.parent.input_directory_lineEdit.setText(new_directory_path)
-        self.directory_lineEdit.setText(new_directory_path)
+        # self.parent.input_directory_lineEdit.setText(new_directory_path)
+        # self.directory_lineEdit.setText(new_directory_path)
+        self.input_directory_comboBox.setText(new_directory_path)
+        self.directory_comboBox.setText(new_directory_path)
         self.refresh_table()
 
     def refresh_table(self):
@@ -203,3 +226,55 @@ class Pic_Dir_Table(object):
             send2trash(self.pics_in_dir[del_num.row()][2])
             del self.pics_in_dir[del_num.row()]
         self.table_from_list()
+
+    def someFunctionCalledFromAnotherThread(self):
+        thread = LoadImageThread(file="test.png", w=512, h=512)
+        self.connect(thread, QtCore.SIGNAL("showImage(QString, int, int)"), self.showImage)
+        thread.start()
+
+    def showImage(self, filename, w, h):
+        pixmap = QtGui.QPixmap(filename).scaled(w, h)
+        self.image.setPixmap(pixmap)
+        self.image.repaint()
+
+    # class threaded_picture_loader(QtCore.QObject):
+    #     # lock = threading.Lock()
+
+    #     def __init__(self, parent, row, image_path, col_width, col_number):
+    #         super(self.threaded_picture_loader, self).__init__()
+    #         self.parent = parent
+    #         self.row = row
+    #         self.image_path = image_path
+    #         self.row_height = row_height
+    #         self.col_width = col_width
+    #         self.col_number = col_number
+    #         # PrimeNumber.lock.acquire()
+    #         # PrimeNumber.prime_numbers[number] = "None"
+    #         # PrimeNumber.lock.release()
+
+    #     def run(self):
+    #         image = QtGui.QImage(self.image_path)
+    #         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
+    #         output_object = (self.row, image_scaled)
+    #         self.moveToThread(mainThread)
+    #         self.parent.table.itemImageScaled.emit(output_object)
+    #           # image_scaled)
+
+class LoadImageThread(QtCore.QThread):
+
+
+    def __init__(self, image_path, col_width, row_height, col_number):
+        QtCore.QThread.__init__(self)
+        self.image_path = image_path
+        self.col_width = col_width
+        self.row_height = row_height
+        self.col_number = col_number
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        image = QtGui.QImage(self.image_path)
+        image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
+        output_object = (self.row, image_scaled)
+        self.emit(QtCore.SIGNAL('showImage(QString, int, int)'), self.file, self.col_width, self.row_height)
