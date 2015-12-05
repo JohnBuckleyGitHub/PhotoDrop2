@@ -21,6 +21,7 @@ class Pic_Dir_Table(object):
         self.table_parameters()
         self.process_table_parameters()
         self.mainThread = QtCore.QThread.currentThread()
+        self.thread_list = []
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -84,7 +85,7 @@ class Pic_Dir_Table(object):
             if self.checkbox.isChecked():
                 # item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
                 item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
-                self.load_picture_from_thread(self.pics_in_dir[i][2], i, col)
+                self.load_picture_from_thread(self.pics_in_dir[i][2], col, i)
                 # self.thread = QtCore.QThread()
                 # image_thread = self.threaded_picture_loader(self, i, self.pics_in_dir[i][2], self.row_height,
                 #                                             self.col_width[col], col)
@@ -178,16 +179,23 @@ class Pic_Dir_Table(object):
         item.setData(QtCore.Qt.DecorationRole, pixmap)
         return item
 
-    def load_picture_from_thread(self, image_path, row_number, col_number):
-        thread = LoadImageThread(image_path, self.col_width[col_number], self.row_height, row_number)
-        self.connect(thread, QtCore.SIGNAL("showImage(QString, int, int)"), self.showImage)
+    def load_picture_from_thread(self, image_path, col_number, row_number):
+        thread = QtCore.QThread()
+        worker = LoadImageThread(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
+        thread.started.connect(worker.start)
+        worker.moveToThread(thread)
+        # thread = LoadImageThread(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
+        # self.connect(thread, QtCore.SIGNAL("showImage(QString, int, int)"), self.showImage)
         thread.start()
+        self.thread_list.append(thread)
+        print("thread length" + str(len(self.thread_list)))
 
-    def show_picture_in_item()
+    def show_picture_in_item(self, image_scaled, col_number, row_number):
+        print("even_here")
         pixmap = QtGui.QPixmap.fromImage(image_scaled)
         item = QtGui.QTableWidgetItem()
         item.setData(QtCore.Qt.DecorationRole, pixmap)
-        return item
+        self.table.setItem(row_number, col_number, item)
 
     def load_picture(self, row, col):
         file_path = '"' + self.pics_in_dir[row][2] + '"'
@@ -232,10 +240,6 @@ class Pic_Dir_Table(object):
         self.connect(thread, QtCore.SIGNAL("showImage(QString, int, int)"), self.showImage)
         thread.start()
 
-    def showImage(self, filename, w, h):
-        pixmap = QtGui.QPixmap(filename).scaled(w, h)
-        self.image.setPixmap(pixmap)
-        self.image.repaint()
 
     # class threaded_picture_loader(QtCore.QObject):
     #     # lock = threading.Lock()
@@ -260,21 +264,21 @@ class Pic_Dir_Table(object):
     #         self.parent.table.itemImageScaled.emit(output_object)
     #           # image_scaled)
 
-class LoadImageThread(QtCore.QThread):
+class LoadImageThread(QtCore.QObject):
 
-
-    def __init__(self, image_path, col_width, row_height, col_number):
-        QtCore.QThread.__init__(self)
+    def __init__(self, image_path, col_width, row_height, col_number, row_number):
+        QtCore.QObject.__init__(self)
         self.image_path = image_path
         self.col_width = col_width
         self.row_height = row_height
         self.col_number = col_number
+        self.row_number = row_number
 
-    def __del__(self):
-        self.wait()
-
-    def run(self):
+    @QtCore.pyqtSlot()
+    def start(self):
+        print("got here")
         image = QtGui.QImage(self.image_path)
         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
-        output_object = (self.row, image_scaled)
-        self.emit(QtCore.SIGNAL('showImage(QString, int, int)'), self.file, self.col_width, self.row_height)
+        print("picture_scaled")
+        self.emit(QtCore.SIGNAL('show_picture_in_item(QImage, int, int)'),
+                  image_scaled, self.col_number, self.row_number)
