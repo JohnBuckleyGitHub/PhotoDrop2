@@ -5,7 +5,6 @@ import glob
 import time
 import datetime
 import fnmatch
-import threading
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 sys.path.insert(0, 'C:/Python Files/pythonlibs')
@@ -13,15 +12,18 @@ import kustomWidgets
 import kustomPalette
 
 
-class Pic_Dir_Table(object):
+class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
 
     def __init__(self, parent):
         self.parent = parent
+        super().__init__(parent)
         self.checkbox = None
         self.table_parameters()
         self.process_table_parameters()
-        self.mainThread = QtCore.QThread.currentThread()
+        # self.mainThread = QtCore.QThread.currentThread()
         self.thread_list = []
+        self.worker_list = []
+        setThreadCount()
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -72,27 +74,14 @@ class Pic_Dir_Table(object):
             full_text = self.pics_in_dir[i][0] + "\n \n \n" + self.pics_in_dir[i][1]
             item = QtGui.QTableWidgetItem(full_text)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-            # if self.pics_in_dir[i][3]:
-            # #     item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-            #     item.setBackground(self.parent.brush.nobrush)
-            # # else:
-            # #     item.setFlags(QtCore.Qt.ItemIsEnabled)
-            #     item.setBackground(self.parent.brush.grey)
             item.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
             # item.setTextAlignment(QtCore.Qt.AlignVCenter)
             table.setItem(i, col, item)
             col = 1
+            item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
             if self.checkbox.isChecked():
                 # item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
-                item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
                 self.load_picture_from_thread(self.pics_in_dir[i][2], col, i)
-                # self.thread = QtCore.QThread()
-                # image_thread = self.threaded_picture_loader(self, i, self.pics_in_dir[i][2], self.row_height,
-                #                                             self.col_width[col], col)
-                # self.threads += [image_thread]
-                # image_thread.start()
-            else:
-                item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
             # if self.pics_in_dir[i][3]:
@@ -180,18 +169,17 @@ class Pic_Dir_Table(object):
         return item
 
     def load_picture_from_thread(self, image_path, col_number, row_number):
+        print(QtCore.QThreadPool().maxThreadCount())
         thread = QtCore.QThread()
         worker = LoadImageThread(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
-        thread.started.connect(worker.start)
-        worker.moveToThread(thread)
-        # thread = LoadImageThread(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
-        # self.connect(thread, QtCore.SIGNAL("showImage(QString, int, int)"), self.showImage)
-        thread.start()
+        worker.moveToThread(thread)  # moves  worker to thread
+        thread.started.connect(worker.start)  # when thread is started, the worker starts also
         self.thread_list.append(thread)
-        print("thread length" + str(len(self.thread_list)))
+        self.worker_list.append(worker)
+        self.connect(worker, worker.signal, self.show_picture_in_item)
+        thread.start()
 
     def show_picture_in_item(self, image_scaled, col_number, row_number):
-        print("even_here")
         pixmap = QtGui.QPixmap.fromImage(image_scaled)
         item = QtGui.QTableWidgetItem()
         item.setData(QtCore.Qt.DecorationRole, pixmap)
@@ -205,8 +193,8 @@ class Pic_Dir_Table(object):
         new_directory_path = QtGui.QFileDialog.getExistingDirectory()
         # self.parent.input_directory_lineEdit.setText(new_directory_path)
         # self.directory_lineEdit.setText(new_directory_path)
-        self.input_directory_comboBox.setText(new_directory_path)
-        self.directory_comboBox.setText(new_directory_path)
+        self.directory_comboBox.insertItem(0, new_directory_path)
+        self.directory_comboBox.setCurrentIndex(0)
         self.refresh_table()
 
     def refresh_table(self):
@@ -264,21 +252,32 @@ class Pic_Dir_Table(object):
     #         self.parent.table.itemImageScaled.emit(output_object)
     #           # image_scaled)
 
-class LoadImageThread(QtCore.QObject):
+class LoadImageThread(QtCore.QThread):
+
+    signal = QtCore.SIGNAL("image_loaded_signal")
 
     def __init__(self, image_path, col_width, row_height, col_number, row_number):
-        QtCore.QObject.__init__(self)
+        # QtCore.QObject.__init__(self)
+        QtCore.QThread.__init__(self, parent=None)
+        # self.signal = QtCore.SIGNAL("image_loaded_signal")
         self.image_path = image_path
         self.col_width = col_width
         self.row_height = row_height
         self.col_number = col_number
         self.row_number = row_number
 
-    @QtCore.pyqtSlot()
+    #  @QtCore.pyqtSlot()
     def start(self):
-        print("got here")
         image = QtGui.QImage(self.image_path)
         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
-        print("picture_scaled")
-        self.emit(QtCore.SIGNAL('show_picture_in_item(QImage, int, int)'),
-                  image_scaled, self.col_number, self.row_number)
+        self.emit(self.signal, image_scaled, self.col_number, self.row_number)
+
+
+def setThreadCount(core_number=QtCore.QThread().idealThreadCount()):
+    print("core number=" + str(core_number))
+    if core_number > 2:
+        QtCore.QThreadPool.globalInstance().setMaxThreadCount(core_number - 2)
+        # QtCore.QThreadPool().setMaxThreadCount(core_number - 2)
+    else:
+        QtCore.QThreadPool.globalInstance().setMaxThreadCount(1)
+    print("thread count set" + str(QtCore.QThreadPool.globalInstance().maxThreadCount()))

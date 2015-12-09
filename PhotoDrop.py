@@ -16,7 +16,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         self.setWindowTitle('Photo Renamer')
         self.brush = kustomWidgets.brushstyle()
         self.tables = PhotoDropFunctions.pd_ui_class(self)
-        # self.transfer_table = PhotoDropFunctions.pd_ui_class(self, "transfer")
+        PhotoDropFunctions.setThreadCount()
 
         self.show()
         self.signalMapper = QtCore.QSignalMapper(self)
@@ -51,17 +51,6 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
 
         self.output_checkBox.clicked.connect(self.tables.output_table.table_from_list)
 
-    def print_comboBox(self, index_num):
-        print("Current index is:" + str(self.comboBox.currentIndex()))
-        print("Current test is:" + str(self.comboBox.currentText()))
-        print("\n\n\n")
-        # stored_value = self.comboBox.currentIndex()
-        # for i in range(self.comboBox.count()):
-        #     self.comboBox.setCurrentIndex(i)
-        #     print(self.comboBox.currentText())
-        print([self.comboBox.itemText(i) for i in range(self.comboBox.count())])
-        print("\n\n\n")
-        # self.comboBox.setCurrentIndex(stored_value)
 
 
 

@@ -10,6 +10,8 @@ from send2trash import send2trash
 
 class pd_ui_class(PictureDirTable.Pic_Dir_Table):
 
+    signal1 = QtCore.SIGNAL("test signal")  # test code
+
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -129,6 +131,13 @@ class pd_ui_class(PictureDirTable.Pic_Dir_Table):
         self.output_table.table_from_list()
 
 
+def setThreadCount(core_number=QtCore.QThread().idealThreadCount()):
+    if core_number > 2:
+        QtCore.QThreadPool.globalInstance().setMaxThreadCount(core_number - 2)
+    else:
+        QtCore.QThreadPool.globalInstance().setMaxThreadCount(1)
+
+
 def letter_increment(letters, increment):
     init_value = alpha2num(letters.lower())
     # places = len(letters)
@@ -151,10 +160,6 @@ def alpha2num(letters):
         loc = abet.find(cur_letter) + 1
         total += (loc*(base**place))
     return total
-
-# def baseN(num, b, numerals=alphabet()):
-#     return (((num == 0) and numerals[0]) or
-#             (baseN(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b]))
 
 
 def num2alpha(num):
