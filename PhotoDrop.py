@@ -16,7 +16,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         self.setWindowTitle('Photo Renamer')
         self.brush = kustomWidgets.brushstyle()
         self.tables = PhotoDropFunctions.pd_ui_class(self)
-        PhotoDropFunctions.setThreadCount()
+        self.thread_pool = QtCore.QThreadPool()
 
         self.show()
         self.signalMapper = QtCore.QSignalMapper(self)

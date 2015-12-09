@@ -23,7 +23,7 @@ class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
         # self.mainThread = QtCore.QThread.currentThread()
         self.thread_list = []
         self.worker_list = []
-        setThreadCount()
+        # setThreadCount()
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -81,7 +81,7 @@ class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
             item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
             if self.checkbox.isChecked():
                 # item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
-                self.load_picture_from_thread(self.pics_in_dir[i][2], col, i)
+                self.load_picture_from_runnable(self.pics_in_dir[i][2], col, i)
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
             # if self.pics_in_dir[i][3]:
@@ -169,7 +169,6 @@ class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
         return item
 
     def load_picture_from_thread(self, image_path, col_number, row_number):
-        print(QtCore.QThreadPool().maxThreadCount())
         thread = QtCore.QThread()
         worker = LoadImageThread(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
         worker.moveToThread(thread)  # moves  worker to thread
@@ -178,6 +177,12 @@ class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
         self.worker_list.append(worker)
         self.connect(worker, worker.signal, self.show_picture_in_item)
         thread.start()
+
+    def load_picture_from_runnable(self, image_path, col_number, row_number):
+        worker = LoadImageRunnable(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
+        # self.worker_list.append(worker)
+        self.connect(worker.signal, worker.signal.signal, self.show_picture_in_item)
+        self.parent.thread_pool.start(worker)
 
     def show_picture_in_item(self, image_scaled, col_number, row_number):
         pixmap = QtGui.QPixmap.fromImage(image_scaled)
@@ -271,6 +276,33 @@ class LoadImageThread(QtCore.QThread):
         image = QtGui.QImage(self.image_path)
         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
         self.emit(self.signal, image_scaled, self.col_number, self.row_number)
+
+
+class SignalEmitter(QtCore.QObject):
+
+    def __init__(self):
+        super().__init__()
+        self.signal = QtCore.SIGNAL("image_loaded_signal")
+
+
+class LoadImageRunnable(QtCore.QRunnable):
+
+    def __init__(self, image_path, col_width, row_height, col_number, row_number):
+        # QtCore.QObject.__init__(self)
+        # QtCore.QRunnable.__init__(self, parent=None)  # check the super, should it be just super().__init__()
+        super().__init__()
+        self.signal = SignalEmitter()
+        self.image_path = image_path
+        self.col_width = col_width
+        self.row_height = row_height
+        self.col_number = col_number
+        self.row_number = row_number
+
+    #  @QtCore.pyqtSlot()
+    def run(self):
+        image = QtGui.QImage(self.image_path)
+        image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
+        self.signal.emit(self.signal.signal, image_scaled, self.col_number, self.row_number)
 
 
 def setThreadCount(core_number=QtCore.QThread().idealThreadCount()):
