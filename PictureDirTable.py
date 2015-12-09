@@ -168,16 +168,6 @@ class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
         item.setData(QtCore.Qt.DecorationRole, pixmap)
         return item
 
-    def load_picture_from_thread(self, image_path, col_number, row_number):
-        thread = QtCore.QThread()
-        worker = LoadImageThread(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
-        worker.moveToThread(thread)  # moves  worker to thread
-        thread.started.connect(worker.start)  # when thread is started, the worker starts also
-        self.thread_list.append(thread)
-        self.worker_list.append(worker)
-        self.connect(worker, worker.signal, self.show_picture_in_item)
-        thread.start()
-
     def load_picture_from_runnable(self, image_path, col_number, row_number):
         worker = LoadImageRunnable(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
         # self.worker_list.append(worker)
@@ -234,50 +224,6 @@ class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
         thread.start()
 
 
-    # class threaded_picture_loader(QtCore.QObject):
-    #     # lock = threading.Lock()
-
-    #     def __init__(self, parent, row, image_path, col_width, col_number):
-    #         super(self.threaded_picture_loader, self).__init__()
-    #         self.parent = parent
-    #         self.row = row
-    #         self.image_path = image_path
-    #         self.row_height = row_height
-    #         self.col_width = col_width
-    #         self.col_number = col_number
-    #         # PrimeNumber.lock.acquire()
-    #         # PrimeNumber.prime_numbers[number] = "None"
-    #         # PrimeNumber.lock.release()
-
-    #     def run(self):
-    #         image = QtGui.QImage(self.image_path)
-    #         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
-    #         output_object = (self.row, image_scaled)
-    #         self.moveToThread(mainThread)
-    #         self.parent.table.itemImageScaled.emit(output_object)
-    #           # image_scaled)
-
-class LoadImageThread(QtCore.QThread):
-
-    signal = QtCore.SIGNAL("image_loaded_signal")
-
-    def __init__(self, image_path, col_width, row_height, col_number, row_number):
-        # QtCore.QObject.__init__(self)
-        QtCore.QThread.__init__(self, parent=None)
-        # self.signal = QtCore.SIGNAL("image_loaded_signal")
-        self.image_path = image_path
-        self.col_width = col_width
-        self.row_height = row_height
-        self.col_number = col_number
-        self.row_number = row_number
-
-    #  @QtCore.pyqtSlot()
-    def start(self):
-        image = QtGui.QImage(self.image_path)
-        image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
-        self.emit(self.signal, image_scaled, self.col_number, self.row_number)
-
-
 class SignalEmitter(QtCore.QObject):
 
     def __init__(self):
@@ -303,13 +249,3 @@ class LoadImageRunnable(QtCore.QRunnable):
         image = QtGui.QImage(self.image_path)
         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
         self.signal.emit(self.signal.signal, image_scaled, self.col_number, self.row_number)
-
-
-def setThreadCount(core_number=QtCore.QThread().idealThreadCount()):
-    print("core number=" + str(core_number))
-    if core_number > 2:
-        QtCore.QThreadPool.globalInstance().setMaxThreadCount(core_number - 2)
-        # QtCore.QThreadPool().setMaxThreadCount(core_number - 2)
-    else:
-        QtCore.QThreadPool.globalInstance().setMaxThreadCount(1)
-    print("thread count set" + str(QtCore.QThreadPool.globalInstance().maxThreadCount()))
