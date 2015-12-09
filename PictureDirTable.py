@@ -12,28 +12,18 @@ import kustomWidgets
 import kustomPalette
 
 
-class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
+class Pic_Dir_Table(QtCore.QObject):  #QtGui.QWidget):
 
-    def __init__(self, name):  # , parent):
-        super().__init__()  # parent)
-        self.name = name
+    def __init__(self, parent):
+        self.parent = parent
+        super().__init__(parent)
         self.checkbox = None
         self.table_parameters()
         self.process_table_parameters()
-        self.pixmap_buffer_dict = {}
-        self.thread_pool = QtCore.QThreadPool()
-
-    def setup_connects(self, grandparent, ui_dict):
-        for key in ui_dict:
-            setattr(self, key, getattr(grandparent, ui_dict[key]))
-        self.table.cellDoubleClicked.connect(self.load_picture)
-        # if self.name is not 'output_table':
-        #     self.itemDropped.connect(self.append_from_event)
-        #     self.itemUrlPasted.connect(self.append_from_event)
-        #     self.itemImageScaled.connect(self.load_item)
-        #     self.itemImagePasted.connect(self.save_image_from_paste)
-        #     self.itemImageDelete.connect(self.delete_selection)
-
+        # self.mainThread = QtCore.QThread.currentThread()
+        self.thread_list = []
+        self.worker_list = []
+        # setThreadCount()
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -94,20 +84,24 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                 self.load_picture_from_runnable(self.pics_in_dir[i][2], col, i)
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+            # if self.pics_in_dir[i][3]:
+            #     item.setBackground(self.parent.brush.nobrush)
+            # else:
+            # #     item.setFlags(QtCore.Qt.ItemIsEnabled)
+            #     item.setBackground(self.parent.brush.grey)
             table.setItem(i, col, item)
         table.setSelectionBehavior(table.SelectRows)
 
     def create_dir_table_data(self):
         # self.directory_path = kustomWidgets.dir_clean(self.directory_lineEdit.text())
         self.directory_path = kustomWidgets.dir_clean(self.directory_comboBox.currentText())
-        self.pics_in_dir = []
+        self.create_empty_table()
         for pic_type in self.picture_type_list:
             tl = glob.glob(self.directory_path + '/' + pic_type)
             for file_path in tl:
                 filename = os.path.basename(file_path)
                 creation_time = self.get_creation_times(file_path)
-                modified_time = os.path.getmtime(file_path)
-                self.pics_in_dir.append([filename, creation_time, file_path, modified_time])
+                self.pics_in_dir.append([filename, creation_time, file_path, True])
         self.pics_in_dir = sorted(self.pics_in_dir, key=lambda x: x[1])
 
     def append_dir_table(self, file_path):
@@ -154,7 +148,11 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def add_selections(self, transfer_list):
         for flist in transfer_list:
+            # flist[3] = True
             self.pics_in_dir.append(flist)
+
+    def create_empty_table(self):
+        self.pics_in_dir = []
 
     def get_creation_times(self, fullname):
         c_time_sec = os.path.getctime(fullname)
@@ -172,8 +170,9 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def load_picture_from_runnable(self, image_path, col_number, row_number):
         worker = LoadImageRunnable(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
+        # self.worker_list.append(worker)
         self.connect(worker.signal, worker.signal.signal, self.show_picture_in_item)
-        self.thread_pool.start(worker)
+        self.parent.thread_pool.start(worker)
 
     def show_picture_in_item(self, image_scaled, col_number, row_number):
         pixmap = QtGui.QPixmap.fromImage(image_scaled)
@@ -187,6 +186,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def browse_directory(self):
         new_directory_path = QtGui.QFileDialog.getExistingDirectory()
+        # self.parent.input_directory_lineEdit.setText(new_directory_path)
+        # self.directory_lineEdit.setText(new_directory_path)
         self.directory_comboBox.insertItem(0, new_directory_path)
         self.directory_comboBox.setCurrentIndex(0)
         self.refresh_table()
@@ -205,6 +206,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                 transfer_row.append(item)
             transfer_list.append(transfer_row)
             del self.pics_in_dir[index.row()]
+            # self.pics_in_dir[index.row()][3] = False
         return transfer_list
 
     def delete_selection(self):
@@ -216,9 +218,13 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             del self.pics_in_dir[del_num.row()]
         self.table_from_list()
 
+    def someFunctionCalledFromAnotherThread(self):
+        thread = LoadImageThread(file="test.png", w=512, h=512)
+        self.connect(thread, QtCore.SIGNAL("showImage(QString, int, int)"), self.showImage)
+        thread.start()
+
 
 class SignalEmitter(QtCore.QObject):
-    #  Needed because QRunnable does not emit a signal
 
     def __init__(self):
         super().__init__()
@@ -228,6 +234,8 @@ class SignalEmitter(QtCore.QObject):
 class LoadImageRunnable(QtCore.QRunnable):
 
     def __init__(self, image_path, col_width, row_height, col_number, row_number):
+        # QtCore.QObject.__init__(self)
+        # QtCore.QRunnable.__init__(self, parent=None)  # check the super, should it be just super().__init__()
         super().__init__()
         self.signal = SignalEmitter()
         self.image_path = image_path
@@ -236,6 +244,7 @@ class LoadImageRunnable(QtCore.QRunnable):
         self.col_number = col_number
         self.row_number = row_number
 
+    #  @QtCore.pyqtSlot()
     def run(self):
         image = QtGui.QImage(self.image_path)
         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
