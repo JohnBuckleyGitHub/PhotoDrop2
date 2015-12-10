@@ -8,7 +8,7 @@ class TableWithPaste(QtGui.QTableWidget):
     itemUrlPasted = QtCore.pyqtSignal(object)
     itemImagePasted = QtCore.pyqtSignal(object)
     itemImageDelete = QtCore.pyqtSignal(object)
-    itemImageScaled = QtCore.pyqtSignal(object)
+    # itemImageScaled = QtCore.pyqtSignal(object)
 
     def __init__(self, parent):
         QtGui.QTableWidget.__init__(self, parent)

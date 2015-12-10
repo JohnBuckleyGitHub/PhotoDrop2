@@ -31,7 +31,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
 
         self.in_dir_tableWidget.itemDropped.connect(self.tables.input_table.append_from_event)
         self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
-        self.in_dir_tableWidget.itemImageScaled.connect(self.tables.load_item)
+        # self.in_dir_tableWidget.itemImageScaled.connect(self.tables.load_item)
         self.in_dir_tableWidget.itemImagePasted.connect(self.tables.input_table.save_image_from_paste)
         self.in_dir_tableWidget.itemImageDelete.connect(self.tables.input_table.delete_selection)
         # self.input_checkBox.clicked.connect(self.tables.input_table.table_from_list)
