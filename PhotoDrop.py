@@ -24,8 +24,8 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         # self.refresh_input_pushButton.clicked.connect(self.tables.input_table.refresh_table)
         # self.browse_input_pushButton.clicked.connect(self.tables.input_table.browse_directory)
         # self.refresh_input_pushButton.clicked.connect(self.tables.input_table.refresh_table)
-        self.pd_transfer_input_trans_pushButton.clicked.connect(self.tables.input_transfer_selection)
-        self.pd_untransfer_input_trans_pushButton.clicked.connect(self.tables.input_untransfer_selection)
+        # self.pd_transfer_input_trans_pushButton.clicked.connect(self.tables.input_transfer_selection)
+        # self.pd_untransfer_input_trans_pushButton.clicked.connect(self.tables.input_untransfer_selection)
 
         # self.in_dir_tableWidget.itemDropped.connect(self.tables.input_table.append_from_event)
         # self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
@@ -44,8 +44,8 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         # self.out_dir_tableWidget.cellDoubleClicked.connect(self.tables.output_table.load_picture)
         # self.browse_output_pushButton.clicked.connect(self.tables.output_table.browse_directory)
         # self.refresh_output_pushButton.clicked.connect(self.tables.output_table.refresh_table)
-        self.pd_transfer_output_trans_pushButton.clicked.connect(self.tables.output_transfer_selection)
-        self.pd_untransfer_output_trans_pushButton.clicked.connect(self.tables.output_untransfer_selection)
+        # self.pd_transfer_output_trans_pushButton.clicked.connect(self.tables.output_transfer_selection)
+        # self.pd_untransfer_output_trans_pushButton.clicked.connect(self.tables.output_untransfer_selection)
 
         # self.output_checkBox.clicked.connect(self.tables.output_table.table_from_list)
 

@@ -14,6 +14,7 @@ class pd_ui_class(QtCore.QObject):
         self.input_table()
         self.transfer_table()
         self.output_table()
+        self.table_connects()
 
     def input_table(self):
         ui_dict = {'table': 'input_directory_tableWidget',
@@ -32,22 +33,11 @@ class pd_ui_class(QtCore.QObject):
         self.input_table.table_from_list()
         self.input_table.directory_comboBox.currentIndexChanged.connect(self.input_table.refresh_table)
 
-    #  ##### This function can probably be removed
-    def load_item(self, input_object):
-        row, image = input_object
-        pixmap = QtGui.QPixmap.fromImage(image)
-        item = QtGui.QTableWidgetItem()
-        item.setData(QtCore.Qt.DecorationRole, pixmap)
-        self.input_table.table.setItem(row, 1, item)
-
     def transfer_table(self):
         ui_dict = {'table': 'transfer_tableWidget',
                    'checkbox': 'transfer_checkBox'}
         self.transfer_table = PictureDirTable.Pic_Dir_Table(self, 'transfer_table')  # self.parent)
         self.transfer_table.setup_connects(self.parent, ui_dict)
-        # self.transfer_table.checkbox = self.parent.transfer_checkBox
-        # self.transfer_table.parent = self.parent
-        # self.transfer_table.table = self.parent.transfer_tableWidget
         self.transfer_table.pics_in_dir = []
 
     def output_table(self):
@@ -61,12 +51,16 @@ class pd_ui_class(QtCore.QObject):
         directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
                           'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
         self.output_table.directory_comboBox.insertItems(0, directory_list)
-        # self.output_table.table = self.parent.out_dir_tableWidget
         self.output_table.create_dir_table_data()
         self.output_table.table_from_list()
 
+    def table_connects(self):
+        self.parent.pd_transfer_input_trans_pushButton.clicked.connect(self.input_transfer_selection)
+        self.parent.pd_untransfer_input_trans_pushButton.clicked.connect(self.input_untransfer_selection)
+        self.parent.pd_transfer_output_trans_pushButton.clicked.connect(self.output_transfer_selection)
+        self.parent.pd_untransfer_output_trans_pushButton.clicked.connect(self.output_untransfer_selection)
+
     def input_transfer_selection(self):
-        print("transfer button works")
         transfer_list = self.input_table.transfer_selection()
         self.transfer_table.add_selections(transfer_list)
         self.transfer_table.table_from_list()
@@ -135,13 +129,6 @@ class pd_ui_class(QtCore.QObject):
         self.output_table.table_from_list()
 
 
-def setThreadCount(core_number=QtCore.QThread().idealThreadCount()):
-    if core_number > 2:
-        QtCore.QThreadPool.globalInstance().setMaxThreadCount(core_number - 2)
-    else:
-        QtCore.QThreadPool.globalInstance().setMaxThreadCount(1)
-
-
 def letter_increment(letters, increment):
     init_value = alpha2num(letters.lower())
     # places = len(letters)
@@ -188,4 +175,3 @@ def alphabet():
 
 def debug_print():
     print("Debug print")
-
