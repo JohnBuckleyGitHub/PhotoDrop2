@@ -14,8 +14,9 @@ import kustomPalette
 
 class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
-    def __init__(self, name):  # , parent):
+    def __init__(self, parent, name):  # , parent):
         super().__init__()  # parent)
+        self.parent = parent
         self.name = name
         self.checkbox = None
         self.table_parameters()
@@ -27,13 +28,20 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         for key in ui_dict:
             setattr(self, key, getattr(grandparent, ui_dict[key]))
         self.table.cellDoubleClicked.connect(self.load_picture)
-        # if self.name is not 'output_table':
-        #     self.itemDropped.connect(self.append_from_event)
-        #     self.itemUrlPasted.connect(self.append_from_event)
-        #     self.itemImageScaled.connect(self.load_item)
-        #     self.itemImagePasted.connect(self.save_image_from_paste)
-        #     self.itemImageDelete.connect(self.delete_selection)
-
+        if self.name is not 'output_table':
+            self.table.itemDropped.connect(self.append_from_event)
+            self.table.itemUrlPasted.connect(self.append_from_event)
+            # self.itemImageScaled.connect(self.load_item)
+            if self.name is 'transfer_table':
+                self.table.itemImagePasted.connect(self.parent.image_paste_into_transfer)
+                self.table.itemImageDelete.connect(self.parent.input_untransfer_selection)
+            else:
+                self.table.itemImagePasted.connect(self.save_image_from_paste)
+                self.table.itemImageDelete.connect(self.delete_selection)
+        if self.name is not 'transfer_table':
+            self.browse_button.clicked.connect(self.browse_directory)
+            self.refresh_button.clicked.connect(self.refresh_table)
+            self.checkbox.clicked.connect(self.table_from_list)
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used

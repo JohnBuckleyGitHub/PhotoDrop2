@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="3">
-     <widget class="QCheckBox" name="input_picture_checkBox">
+     <widget class="QCheckBox" name="input_checkBox">
       <property name="text">
        <string>Load Pictures</string>
       </property>
@@ -30,7 +30,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QPushButton" name="input_refresh_pushButton">
+     <widget class="QPushButton" name="refresh_input_pushButton">
       <property name="text">
        <string>Refresh Table</string>
       </property>
@@ -44,7 +44,7 @@
      </widget>
     </item>
     <item row="3" column="4">
-     <widget class="QPushButton" name="pd_transfer_input_trans_pushButton">
+     <widget class="QPushButton" name="transfer_input_trans_pushButton">
       <property name="text">
        <string>&gt;&gt;&gt;</string>
       </property>
@@ -58,7 +58,7 @@
      </widget>
     </item>
     <item row="2" column="9" rowspan="7" colspan="3">
-     <widget class="TableWithPaste" name="output_directory_tableWidget">
+     <widget class="TableWithPaste" name="out_dir_tableWidget">
       <property name="minimumSize">
        <size>
         <width>300</width>
@@ -68,35 +68,35 @@
      </widget>
     </item>
     <item row="1" column="2">
-     <widget class="QPushButton" name="input_browse_pushButton">
+     <widget class="QPushButton" name="browse_input_pushButton">
       <property name="text">
        <string>Browse Input Directory</string>
       </property>
      </widget>
     </item>
     <item row="1" column="9">
-     <widget class="QPushButton" name="output_refresh_pushButton">
+     <widget class="QPushButton" name="refresh_output_pushButton">
       <property name="text">
        <string>Refresh Table</string>
       </property>
      </widget>
     </item>
     <item row="1" column="11">
-     <widget class="QCheckBox" name="output_picture_checkBox">
+     <widget class="QCheckBox" name="output_checkBox">
       <property name="text">
        <string>Load Pictures</string>
       </property>
      </widget>
     </item>
     <item row="4" column="4">
-     <widget class="QPushButton" name="pd_untransfer_input_trans_pushButton">
+     <widget class="QPushButton" name="untransfer_input_trans_pushButton">
       <property name="text">
        <string>&lt;&lt;&lt;</string>
       </property>
      </widget>
     </item>
     <item row="3" column="8">
-     <widget class="QPushButton" name="pd_transfer_output_trans_pushButton">
+     <widget class="QPushButton" name="transfer_output_trans_pushButton">
       <property name="text">
        <string>&gt;&gt;&gt;</string>
       </property>
@@ -110,7 +110,7 @@
      </widget>
     </item>
     <item row="1" column="10">
-     <widget class="QPushButton" name="output_browse_pushButton">
+     <widget class="QPushButton" name="browse_output_pushButton">
       <property name="text">
        <string>Browse Output Directory</string>
       </property>
@@ -140,7 +140,7 @@
      </widget>
     </item>
     <item row="7" column="6" colspan="2">
-     <widget class="QLineEdit" name="pd_increment_letter_lineEdit"/>
+     <widget class="QLineEdit" name="increment_letter_lineEdit"/>
     </item>
     <item row="2" column="5" rowspan="4" colspan="3">
      <widget class="TableWithPaste" name="transfer_tableWidget">
@@ -169,14 +169,14 @@
      </spacer>
     </item>
     <item row="8" column="5" colspan="2">
-     <widget class="QPushButton" name="pd_database_settings_pushButton">
+     <widget class="QPushButton" name="database_settings_pushButton">
       <property name="text">
        <string>Run Database Settings</string>
       </property>
      </widget>
     </item>
     <item row="2" column="1" rowspan="7" colspan="3">
-     <widget class="TableWithPaste" name="input_directory_tableWidget">
+     <widget class="TableWithPaste" name="in_dir_tableWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -192,7 +192,7 @@
      </widget>
     </item>
     <item row="4" column="8">
-     <widget class="QPushButton" name="pd_untransfer_output_trans_pushButton">
+     <widget class="QPushButton" name="untransfer_output_trans_pushButton">
       <property name="text">
        <string>&lt;&lt;&lt;</string>
       </property>
@@ -206,21 +206,21 @@
      </widget>
     </item>
     <item row="0" column="7">
-     <widget class="QPushButton" name="pd_last_run_pushButton">
+     <widget class="QPushButton" name="last_run_pushButton">
       <property name="text">
        <string>Last Run</string>
       </property>
      </widget>
     </item>
     <item row="0" column="6">
-     <widget class="QSpinBox" name="pd_run_number_spinBox">
+     <widget class="QSpinBox" name="run_number_spinBox">
       <property name="maximum">
        <number>99999</number>
       </property>
      </widget>
     </item>
     <item row="6" column="6" colspan="2">
-     <widget class="QLineEdit" name="pd_prefix_lineEdit"/>
+     <widget class="QLineEdit" name="prefix_lineEdit"/>
     </item>
     <item row="0" column="2" colspan="2">
      <widget class="QComboBox" name="input_directory_comboBox"/>

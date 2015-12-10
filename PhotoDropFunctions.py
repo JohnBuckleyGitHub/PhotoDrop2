@@ -2,8 +2,6 @@ import os
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 import PictureDirTable
-import time
-import math
 import shutil
 from send2trash import send2trash
 
@@ -12,18 +10,18 @@ class pd_ui_class(QtCore.QObject):
 
     def __init__(self, parent):
         self.parent = parent
-        # super().__init__()
+        super().__init__()
         self.input_table()
         self.transfer_table()
         self.output_table()
 
     def input_table(self):
-        ui_dict = {'table': 'in_dir_tableWidget',
-                   'browse_button': 'browse_input_pushButton',
-                   'refresh_button': 'refresh_input_pushButton',
-                   'checkbox': 'input_checkBox',
+        ui_dict = {'table': 'input_directory_tableWidget',
+                   'browse_button': 'input_browse_pushButton',
+                   'refresh_button': 'input_refresh_pushButton',
+                   'checkbox': 'input_picture_checkBox',
                    'directory_comboBox': 'input_directory_comboBox'}
-        self.input_table = PictureDirTable.Pic_Dir_Table('input_table')
+        self.input_table = PictureDirTable.Pic_Dir_Table(self, 'input_table')
         self.input_table.setup_connects(self.parent, ui_dict)
         # self.input_table.directory_comboBox = self.parent.input_directory_comboBox
         directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
@@ -34,6 +32,7 @@ class pd_ui_class(QtCore.QObject):
         self.input_table.table_from_list()
         self.input_table.directory_comboBox.currentIndexChanged.connect(self.input_table.refresh_table)
 
+    #  ##### This function can probably be removed
     def load_item(self, input_object):
         row, image = input_object
         pixmap = QtGui.QPixmap.fromImage(image)
@@ -43,11 +42,8 @@ class pd_ui_class(QtCore.QObject):
 
     def transfer_table(self):
         ui_dict = {'table': 'transfer_tableWidget',
-                   'browse_button': 'browse_input_pushButton',
-                   'refresh_button': 'refresh_input_pushButton',
-                   'checkbox': 'input_checkBox',
-                   'directory_comboBox': 'input_directory_comboBox'}
-        self.transfer_table = PictureDirTable.Pic_Dir_Table('transfer_table')  # self.parent)
+                   'checkbox': 'transfer_checkBox'}
+        self.transfer_table = PictureDirTable.Pic_Dir_Table(self, 'transfer_table')  # self.parent)
         self.transfer_table.setup_connects(self.parent, ui_dict)
         # self.transfer_table.checkbox = self.parent.transfer_checkBox
         # self.transfer_table.parent = self.parent
@@ -55,17 +51,12 @@ class pd_ui_class(QtCore.QObject):
         self.transfer_table.pics_in_dir = []
 
     def output_table(self):
-        ui_dict = {'table': 'out_dir_tableWidget',
-                   'browse_button': 'browse_output_pushButton',
-                   'refresh_button': 'refresh_output_pushButton',
-                   'checkbox': 'output_checkBox',
+        ui_dict = {'table': 'output_directory_tableWidget',
+                   'browse_button': 'output_browse_pushButton',
+                   'refresh_button': 'output_refresh_pushButton',
+                   'checkbox': 'output_picture_checkBox',
                    'directory_comboBox': 'output_directory_comboBox'}
-        self.output_table = PictureDirTable.Pic_Dir_Table('output_table')  # self.parent)
-        # self.output_table.checkbox = self.parent.output_checkBox
-        # self.transfer_table.parent = self.parent
-        # self.output_table.directory_lineEdit = self.parent.output_directory_lineEdit
-        # self.output_table.directory_lineEdit.setText('C:/Users/Johns Lenovo/Documents/Pictures')
-        # self.output_table.directory_comboBox = self.parent.output_directory_comboBox
+        self.output_table = PictureDirTable.Pic_Dir_Table(self, 'output_table')  # self.parent)
         self.output_table.setup_connects(self.parent, ui_dict)
         directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
                           'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
@@ -75,6 +66,7 @@ class pd_ui_class(QtCore.QObject):
         self.output_table.table_from_list()
 
     def input_transfer_selection(self):
+        print("transfer button works")
         transfer_list = self.input_table.transfer_selection()
         self.transfer_table.add_selections(transfer_list)
         self.transfer_table.table_from_list()
@@ -87,22 +79,22 @@ class pd_ui_class(QtCore.QObject):
         self.input_table.table_from_list()
 
     def image_paste_into_transfer(self, mime_data):
-        self.parent.in_dir_tableWidget.itemImagePasted.emit(mime_data)
-        last_row = self.parent.in_dir_tableWidget.rowCount() - 1
-        for col in range(self.parent.in_dir_tableWidget.columnCount()):
-            self.parent.in_dir_tableWidget.item(last_row, col).setSelected(True)
+        self.parent.input_directory_tableWidget.itemImagePasted.emit(mime_data)
+        last_row = self.parent.input_directory_tableWidget.rowCount() - 1
+        for col in range(self.parent.input_directory_tableWidget.columnCount()):
+            self.parent.input_directory_tableWidget.item(last_row, col).setSelected(True)
         self.input_transfer_selection()
 
     def output_transfer_selection(self):
         transfer_list = self.transfer_table.transfer_selection()
         output_path = self.output_table.directory_comboBox.currentText()  # self.output_table.directory_lineEdit.text()
-        increment_letter = self.parent.increment_letter_lineEdit.text()
+        increment_letter = self.parent.pd_increment_letter_lineEdit.text()
         for i in range(len(transfer_list)):
             file_item = transfer_list[i]
             file_type = file_item[0][file_item[0].find('.'):]
             for j in range(1000):
                 inc_letter = letter_increment(increment_letter, j+1)
-                new_name = (self.parent.prefix_lineEdit.text() + self.parent.run_number_spinBox.text() +
+                new_name = (self.parent.pd_prefix_lineEdit.text() + self.parent.pd_run_number_spinBox.text() +
                             inc_letter + file_type)
                 new_file = output_path + '/' + new_name
                 if os.path.exists(new_file) is False:
@@ -119,7 +111,6 @@ class pd_ui_class(QtCore.QObject):
 
     def output_untransfer_selection(self):
         transfer_list = self.output_table.transfer_selection()
-        # input_path = self.input_table.directory_lineEdit.text()
         input_path = self.input_table.directory_comboBox.currentText()
         for i in range(len(transfer_list)):
             file_item = transfer_list[i]
@@ -128,7 +119,7 @@ class pd_ui_class(QtCore.QObject):
                 dot_place = new_file.find('.')
                 file_type = new_file[dot_place:]
                 file_root = new_file[:dot_place]
-                increment_letter = self.parent.increment_letter_lineEdit.text()
+                increment_letter = self.parent.pd_increment_letter_lineEdit.text()
                 for j in range(1000):
                     new_file = str(file_root) + str(letter_increment(increment_letter, j)) + file_type
                     if os.path.exists(new_file) is False:
@@ -193,4 +184,8 @@ def num2alpha(num):
 
 def alphabet():
     return 'abcdefghijklmnopqrstuvwxyz'
+
+
+def debug_print():
+    print("Debug print")
 

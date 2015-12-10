@@ -15,41 +15,39 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):  # PhotoDro
         uic.loadUi('PhotoDrop.ui', self)
         self.setWindowTitle('Photo Renamer')
         self.brush = kustomWidgets.brushstyle()
-        self.b = 5
         self.tables = PhotoDropFunctions.pd_ui_class(self)
-
         self.show()
         self.signalMapper = QtCore.QSignalMapper(self)
 
-        # self.in_dir_tableWidget.cellDoubleClicked.connect(self.tables.input_table.load_picture)
+
         # self.browse_input_pushButton.clicked.connect(self.tables.input_table.browse_directory)
         # self.refresh_input_pushButton.clicked.connect(self.tables.input_table.refresh_table)
-        self.browse_input_pushButton.clicked.connect(self.tables.input_table.browse_directory)
-        self.refresh_input_pushButton.clicked.connect(self.tables.input_table.refresh_table)
-        self.transfer_input_trans_pushButton.clicked.connect(self.tables.input_transfer_selection)
-        self.untransfer_input_trans_pushButton.clicked.connect(self.tables.input_untransfer_selection)
+        # self.browse_input_pushButton.clicked.connect(self.tables.input_table.browse_directory)
+        # self.refresh_input_pushButton.clicked.connect(self.tables.input_table.refresh_table)
+        self.pd_transfer_input_trans_pushButton.clicked.connect(self.tables.input_transfer_selection)
+        self.pd_untransfer_input_trans_pushButton.clicked.connect(self.tables.input_untransfer_selection)
 
-        self.in_dir_tableWidget.itemDropped.connect(self.tables.input_table.append_from_event)
-        self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
-        # self.in_dir_tableWidget.itemImageScaled.connect(self.tables.load_item)
-        self.in_dir_tableWidget.itemImagePasted.connect(self.tables.input_table.save_image_from_paste)
-        self.in_dir_tableWidget.itemImageDelete.connect(self.tables.input_table.delete_selection)
+        # self.in_dir_tableWidget.itemDropped.connect(self.tables.input_table.append_from_event)
+        # self.in_dir_tableWidget.itemUrlPasted.connect(self.tables.input_table.append_from_event)
+        # # self.in_dir_tableWidget.itemImageScaled.connect(self.tables.load_item)
+        # self.in_dir_tableWidget.itemImagePasted.connect(self.tables.input_table.save_image_from_paste)
+        # self.in_dir_tableWidget.itemImageDelete.connect(self.tables.input_table.delete_selection)
         # self.input_checkBox.clicked.connect(self.tables.input_table.table_from_list)
-        self.input_checkBox.clicked.connect(self.tables.input_table.table_from_list)
+        # self.input_checkBox.clicked.connect(self.tables.input_table.table_from_list)
 
-        self.transfer_tableWidget.itemDropped.connect(self.tables.transfer_table.append_from_event)
-        self.transfer_tableWidget.itemUrlPasted.connect(self.tables.transfer_table.append_from_event)
-        self.transfer_tableWidget.itemImagePasted.connect(self.tables.image_paste_into_transfer)
-        self.transfer_tableWidget.itemImageDelete.connect(self.tables.input_untransfer_selection)
+        # self.transfer_tableWidget.itemDropped.connect(self.tables.transfer_table.append_from_event)
+        # self.transfer_tableWidget.itemUrlPasted.connect(self.tables.transfer_table.append_from_event)
+        # self.transfer_tableWidget.itemImagePasted.connect(self.tables.image_paste_into_transfer)
+        # self.transfer_tableWidget.itemImageDelete.connect(self.tables.input_untransfer_selection)
         # self.transfer_checkBox.clicked.connect(self.tables.transfer_table.table_from_list)
 
         # self.out_dir_tableWidget.cellDoubleClicked.connect(self.tables.output_table.load_picture)
-        self.browse_output_pushButton.clicked.connect(self.tables.output_table.browse_directory)
-        self.refresh_output_pushButton.clicked.connect(self.tables.output_table.refresh_table)
-        self.transfer_output_trans_pushButton.clicked.connect(self.tables.output_transfer_selection)
-        self.untransfer_output_trans_pushButton.clicked.connect(self.tables.output_untransfer_selection)
+        # self.browse_output_pushButton.clicked.connect(self.tables.output_table.browse_directory)
+        # self.refresh_output_pushButton.clicked.connect(self.tables.output_table.refresh_table)
+        self.pd_transfer_output_trans_pushButton.clicked.connect(self.tables.output_transfer_selection)
+        self.pd_untransfer_output_trans_pushButton.clicked.connect(self.tables.output_untransfer_selection)
 
-        self.output_checkBox.clicked.connect(self.tables.output_table.table_from_list)
+        # self.output_checkBox.clicked.connect(self.tables.output_table.table_from_list)
 
 
 if __name__ == '__main__':
