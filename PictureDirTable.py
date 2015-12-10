@@ -28,6 +28,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         for key in ui_dict:
             setattr(self, key, getattr(grandparent, ui_dict[key]))
         self.table.cellDoubleClicked.connect(self.load_picture)
+        self.checkbox.clicked.connect(self.table_from_list)
         if self.name is not 'output_table':
             self.table.itemDropped.connect(self.append_from_event)
             self.table.itemUrlPasted.connect(self.append_from_event)
@@ -41,7 +42,6 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         if self.name is not 'transfer_table':
             self.browse_button.clicked.connect(self.browse_directory)
             self.refresh_button.clicked.connect(self.refresh_table)
-            self.checkbox.clicked.connect(self.table_from_list)
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -96,10 +96,16 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             # item.setTextAlignment(QtCore.Qt.AlignVCenter)
             table.setItem(i, col, item)
             col = 1
-            item = QtGui.QTableWidgetItem(self.pics_in_dir[i][1])
+            item = QtGui.QTableWidgetItem()
             if self.checkbox.isChecked():
                 # item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
-                self.load_picture_from_runnable(self.pics_in_dir[i][2], col, i)
+                if self.picture_id(i) in self.pixmap_buffer_dict:
+                    item.setData(QtCore.Qt.DecorationRole, self.pixmap_buffer_dict[self.picture_id(i)])
+                else:
+                    item.setData(QtCore.Qt.DisplayRole, self.pics_in_dir[i][1])
+                    self.load_picture_from_runnable(self.pics_in_dir[i][2], col, i)
+            else:
+                item.setData(QtCore.Qt.DisplayRole, self.pics_in_dir[i][1])
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
             table.setItem(i, col, item)
@@ -188,6 +194,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         item = QtGui.QTableWidgetItem()
         item.setData(QtCore.Qt.DecorationRole, pixmap)
         self.table.setItem(row_number, col_number, item)
+        self.pixmap_buffer_dict[self.picture_id(row_number)] = pixmap
+
+    def picture_id(self, row):
+        return (str(self.pics_in_dir[row][0]) + "//" + str(self.pics_in_dir[row][3]))
 
     def load_picture(self, row, col):
         file_path = '"' + self.pics_in_dir[row][2] + '"'

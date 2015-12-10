@@ -59,6 +59,10 @@ class pd_ui_class(QtCore.QObject):
         self.parent.pd_untransfer_input_trans_pushButton.clicked.connect(self.input_untransfer_selection)
         self.parent.pd_transfer_output_trans_pushButton.clicked.connect(self.output_transfer_selection)
         self.parent.pd_untransfer_output_trans_pushButton.clicked.connect(self.output_untransfer_selection)
+        self.parent.pd_last_run_pushButton.clicked.connect(self.retrieve_last_run_number)
+
+    def retrieve_last_run_number(self):
+        print("last run")
 
     def input_transfer_selection(self):
         transfer_list = self.input_table.transfer_selection()
