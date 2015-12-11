@@ -11,10 +11,19 @@ class pd_ui_class(QtCore.QObject):
     def __init__(self, parent):
         self.parent = parent
         super().__init__()
+        self.init_settings()
         self.input_table()
         self.transfer_table()
         self.output_table()
         self.table_connects()
+
+    def init_settings(self):
+        # self.settings = QtCore.QSettings('abc', 'def')
+        self.settings = QtCore.QSettings('settings.ini', QtCore.QSettings.IniFormat)
+        self.settings.setFallbacksEnabled(False)
+        self.parent.pd_run_number_spinBox.setValue(int(self.settings.value('pd_run_number_spinBox', 0)))
+        self.parent.pd_prefix_lineEdit.setText(self.settings.value('pd_prefix_lineEdit', 'I15C08'))
+        self.parent.pd_increment_letter_lineEdit.setText(self.settings.value('pd_increment_letter_lineEdit', 'aa'))
 
     def input_table(self):
         ui_dict = {'table': 'input_directory_tableWidget',
@@ -24,14 +33,11 @@ class pd_ui_class(QtCore.QObject):
                    'directory_comboBox': 'input_directory_comboBox'}
         self.input_table = PictureDirTable.Pic_Dir_Table(self, 'input_table')
         self.input_table.setup_connects(self.parent, ui_dict)
-        # self.input_table.directory_comboBox = self.parent.input_directory_comboBox
-        directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
-                          'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
-        self.input_table.directory_comboBox.insertItems(0, directory_list)
-        # self.input_table.table = self.parent.in_dir_tableWidget
+        # directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
+        #                   'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
+        # self.input_table.directory_comboBox.insertItems(0, directory_list)
         self.input_table.create_dir_table_data()
         self.input_table.table_from_list()
-        self.input_table.directory_comboBox.currentIndexChanged.connect(self.input_table.refresh_table)
 
     def transfer_table(self):
         ui_dict = {'table': 'transfer_tableWidget',
@@ -48,9 +54,9 @@ class pd_ui_class(QtCore.QObject):
                    'directory_comboBox': 'output_directory_comboBox'}
         self.output_table = PictureDirTable.Pic_Dir_Table(self, 'output_table')  # self.parent)
         self.output_table.setup_connects(self.parent, ui_dict)
-        directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
-                          'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
-        self.output_table.directory_comboBox.insertItems(0, directory_list)
+        # directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
+        #                   'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
+        # self.output_table.directory_comboBox.insertItems(0, directory_list)
         self.output_table.create_dir_table_data()
         self.output_table.table_from_list()
 
@@ -60,9 +66,17 @@ class pd_ui_class(QtCore.QObject):
         self.parent.pd_transfer_output_trans_pushButton.clicked.connect(self.output_transfer_selection)
         self.parent.pd_untransfer_output_trans_pushButton.clicked.connect(self.output_untransfer_selection)
         self.parent.pd_last_run_pushButton.clicked.connect(self.retrieve_last_run_number)
+        self.parent.pd_run_number_spinBox.valueChanged.connect(self.save_state)
+        self.parent.pd_prefix_lineEdit.textChanged.connect(self.save_state)
+        self.parent.pd_increment_letter_lineEdit.textChanged.connect(self.save_state)
+
+    def save_state(self):
+        self.settings.setValue('pd_run_number_spinBox', self.parent.pd_run_number_spinBox.value())
+        self.settings.setValue('pd_prefix_lineEdit', self.parent.pd_prefix_lineEdit.text())
+        self.settings.setValue('pd_increment_letter_lineEdit', self.parent.pd_increment_letter_lineEdit.text())
 
     def retrieve_last_run_number(self):
-        print("last run")
+        self.save_state()
 
     def input_transfer_selection(self):
         transfer_list = self.input_table.transfer_selection()

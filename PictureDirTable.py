@@ -5,6 +5,7 @@ import glob
 import time
 import datetime
 import fnmatch
+import ast
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 sys.path.insert(0, 'C:/Python Files/pythonlibs')
@@ -18,7 +19,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         super().__init__()  # parent)
         self.parent = parent
         self.name = name
-        self.checkbox = None
+        # self.checkbox = None
         self.table_parameters()
         self.process_table_parameters()
         self.pixmap_buffer_dict = {}
@@ -29,6 +30,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             setattr(self, key, getattr(grandparent, ui_dict[key]))
         self.table.cellDoubleClicked.connect(self.load_picture)
         self.checkbox.clicked.connect(self.table_from_list)
+        output = int(self.parent.settings.value((self.name + '_checkbox'), QtCore.Qt.Unchecked))
+        self.checkbox.setCheckState(output)
         if self.name is not 'output_table':
             self.table.itemDropped.connect(self.append_from_event)
             self.table.itemUrlPasted.connect(self.append_from_event)
@@ -42,6 +45,9 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         if self.name is not 'transfer_table':
             self.browse_button.clicked.connect(self.browse_directory)
             self.refresh_button.clicked.connect(self.refresh_table)
+            self.directory_comboBox.currentIndexChanged.connect(self.refresh_table)
+            self.directory_comboBox.insertItems(0, self.parent.settings.value(self.name + '_combo_items', []))
+        # self.checkbox.setChecked(True)
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -72,6 +78,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         #  This function populates a table from a query (originally a db quary)
         # self.in_dir_table = self.parent.in_dir_tableWidget  # makes the table specific to this widget
         table = self.table  # Shortcut for long name
+        self.save_table_state()
         table.setRowCount(0)
         # self.create_dir_table_data()
         table.setColumnCount(self.colcount)
@@ -93,12 +100,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             item = QtGui.QTableWidgetItem(full_text)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
             item.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-            # item.setTextAlignment(QtCore.Qt.AlignVCenter)
             table.setItem(i, col, item)
             col = 1
             item = QtGui.QTableWidgetItem()
             if self.checkbox.isChecked():
-                # item = self.load_picture_in_item(self.pics_in_dir[i][2], col)
                 if self.picture_id(i) in self.pixmap_buffer_dict:
                     item.setData(QtCore.Qt.DecorationRole, self.pixmap_buffer_dict[self.picture_id(i)])
                 else:
@@ -204,7 +209,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         os.system(file_path)
 
     def browse_directory(self):
-        new_directory_path = QtGui.QFileDialog.getExistingDirectory()
+        new_directory_path = QtGui.QFileDialog.getExistingDirectory(None, '', self.directory_comboBox.currentText())
         self.directory_comboBox.insertItem(0, new_directory_path)
         self.directory_comboBox.setCurrentIndex(0)
         self.refresh_table()
@@ -233,6 +238,14 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             send2trash(self.pics_in_dir[del_num.row()][2])
             del self.pics_in_dir[del_num.row()]
         self.table_from_list()
+
+    def save_table_state(self):
+        if self.name is not 'transfer_table':
+            combo_items = [self.directory_comboBox.itemText(i) for i in range(self.directory_comboBox.count())]
+            self.parent.settings.setValue(self.name + '_combo_items', combo_items)
+        self.parent.settings.setValue(self.name + '_checkbox', str(self.checkbox.checkState()))
+
+
 
 
 class SignalEmitter(QtCore.QObject):
