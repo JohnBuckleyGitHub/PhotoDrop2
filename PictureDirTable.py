@@ -202,7 +202,12 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         self.pixmap_buffer_dict[self.picture_id(row_number)] = pixmap
 
     def picture_id(self, row):
-        return (str(self.pics_in_dir[row][0]) + "//" + str(self.pics_in_dir[row][3]))
+        if row < len(self.pics_in_dir):
+            try:
+                return (str(self.pics_in_dir[row][0]) + "//" + str(self.pics_in_dir[row][3]))
+            except IndexError:
+                print("row = " + str(row))
+        return "Row Unavailable"
 
     def load_picture(self, row, col):
         file_path = '"' + self.pics_in_dir[row][2] + '"'
@@ -210,9 +215,19 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def browse_directory(self):
         new_directory_path = QtGui.QFileDialog.getExistingDirectory(None, '', self.directory_comboBox.currentText())
+        if new_directory_path in self.get_combo_items():
+            position = self.get_combo_items().index(new_directory_path)
+            self.directory_comboBox.removeItem(position)
         self.directory_comboBox.insertItem(0, new_directory_path)
         self.directory_comboBox.setCurrentIndex(0)
+        item_count = self.directory_comboBox.count()
+        if item_count > 10:
+            for i in range(10, item_count):
+                self.directory_comboBox.removeItem(i)
         self.refresh_table()
+
+    def get_combo_items(self):
+        return [self.directory_comboBox.itemText(i) for i in range(self.directory_comboBox.count())]
 
     def refresh_table(self):
         self.create_dir_table_data()
@@ -241,8 +256,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def save_table_state(self):
         if self.name is not 'transfer_table':
-            combo_items = [self.directory_comboBox.itemText(i) for i in range(self.directory_comboBox.count())]
-            self.parent.settings.setValue(self.name + '_combo_items', combo_items)
+            self.parent.settings.setValue(self.name + '_combo_items', self.get_combo_items())
         self.parent.settings.setValue(self.name + '_checkbox', str(self.checkbox.checkState()))
 
 
