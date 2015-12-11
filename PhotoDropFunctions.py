@@ -30,7 +30,8 @@ class pd_ui_class(QtCore.QObject):
                    'browse_button': 'input_browse_pushButton',
                    'refresh_button': 'input_refresh_pushButton',
                    'checkbox': 'input_picture_checkBox',
-                   'directory_comboBox': 'input_directory_comboBox'}
+                   'directory_comboBox': 'input_directory_comboBox',
+                   'sort_comboBox': 'input_sort_comboBox'}
         self.input_table = PictureDirTable.Pic_Dir_Table(self, 'input_table')
         self.input_table.setup_connects(self.parent, ui_dict)
         # directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
@@ -51,7 +52,8 @@ class pd_ui_class(QtCore.QObject):
                    'browse_button': 'output_browse_pushButton',
                    'refresh_button': 'output_refresh_pushButton',
                    'checkbox': 'output_picture_checkBox',
-                   'directory_comboBox': 'output_directory_comboBox'}
+                   'directory_comboBox': 'output_directory_comboBox',
+                   'sort_comboBox': 'output_sort_comboBox'}
         self.output_table = PictureDirTable.Pic_Dir_Table(self, 'output_table')  # self.parent)
         self.output_table.setup_connects(self.parent, ui_dict)
         # directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',

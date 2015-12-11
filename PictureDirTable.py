@@ -5,7 +5,6 @@ import glob
 import time
 import datetime
 import fnmatch
-import ast
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 sys.path.insert(0, 'C:/Python Files/pythonlibs')
@@ -47,6 +46,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             self.refresh_button.clicked.connect(self.refresh_table)
             self.directory_comboBox.currentIndexChanged.connect(self.refresh_table)
             self.directory_comboBox.insertItems(0, self.parent.settings.value(self.name + '_combo_items', []))
+            self.init_sort_comboBox()
+            self.sort_comboBox.currentIndexChanged.connect(self.refresh_table)
         # self.checkbox.setChecked(True)
 
     def table_parameters(self):
@@ -127,7 +128,9 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                 creation_time = self.get_creation_times(file_path)
                 modified_time = os.path.getmtime(file_path)
                 self.pics_in_dir.append([filename, creation_time, file_path, modified_time])
-        self.pics_in_dir = sorted(self.pics_in_dir, key=lambda x: x[1])
+        if self.name is not 'transfer_table':
+            (sort_index, reverse_boolean) = self.sort_dict[self.sort_comboBox.currentText()]
+            self.pics_in_dir = sorted(self.pics_in_dir, key=lambda x: x[sort_index], reverse=reverse_boolean)
 
     def append_dir_table(self, file_path):
         for pic_type in self.picture_type_list:
@@ -258,6 +261,15 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         if self.name is not 'transfer_table':
             self.parent.settings.setValue(self.name + '_combo_items', self.get_combo_items())
         self.parent.settings.setValue(self.name + '_checkbox', str(self.checkbox.checkState()))
+
+    def init_sort_comboBox(self):
+        self.sort_dict = {'Date Created - Ascending': [1, False],
+                          'Date Created - Descending': [1, True],
+                          'Date Modified - Ascending': [3, False],
+                          'Date Modified - Descending': [3, True],
+                          'Name - Ascending': [0, False],
+                          'Name - Descending': [0, True]}
+        self.sort_comboBox.insertItems(0, sorted(self.sort_dict.keys()))
 
 
 
