@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1460</width>
+    <width>2678</width>
     <height>1045</height>
    </rect>
   </property>
@@ -261,7 +261,7 @@
      </widget>
     </item>
     <item row="2" column="2" colspan="2">
-     <widget class="QComboBox" name="input_directory_comboBox"/>
+     <widget class="TidyComboBox" name="input_directory_comboBox"/>
     </item>
     <item row="1" column="1">
      <widget class="QPushButton" name="input_refresh_pushButton">
@@ -292,7 +292,7 @@
      </widget>
     </item>
     <item row="2" column="10" colspan="2">
-     <widget class="QComboBox" name="output_directory_comboBox"/>
+     <widget class="TidyComboBox" name="output_directory_comboBox"/>
     </item>
     <item row="1" column="11">
      <widget class="QCheckBox" name="output_picture_checkBox">
@@ -322,8 +322,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1460</width>
-     <height>21</height>
+     <width>2678</width>
+     <height>47</height>
     </rect>
    </property>
   </widget>
@@ -334,6 +334,11 @@
    <class>TableWithPaste</class>
    <extends>QTableWidget</extends>
    <header>table_with_paste.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TidyComboBox</class>
+   <extends>QComboBox</extends>
+   <header>tidy_combo_box.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
