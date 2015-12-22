@@ -18,8 +18,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         super().__init__()  # parent)
         self.parent = parent
         self.name = name
+        # self.checkbox = None
         self.table_parameters()
         self.process_table_parameters()
+        # self.pixmap_buffer_dict = {}
         self.thread_pool = QtCore.QThreadPool()
 
     def setup_connects(self, grandparent, ui_dict):
@@ -39,6 +41,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                 self.table.itemImagePasted.connect(self.save_image_from_paste)
                 self.table.itemImageDelete.connect(self.delete_selection)
         if self.name is not 'transfer_table':
+            # self.directory_comboBox = TidyComboBox(self.primitive_comboBox, 10)
             self.directory_comboBox.max_items = 10
             self.init_sort_comboBox()
             self.sort_comboBox.setCurrentIndex(int(self.parent.settings.value(self.name + 'sort_comboBox', 0)))
@@ -82,6 +85,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         table = self.table  # Shortcut for long name
         self.save_table_state()
         table.setRowCount(0)
+        # self.create_dir_table_data()
         table.setColumnCount(self.colcount)
         for col in range(self.colcount):
             table.setColumnWidth(col, self.col_width[col])

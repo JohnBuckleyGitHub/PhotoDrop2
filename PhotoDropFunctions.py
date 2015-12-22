@@ -11,6 +11,8 @@ class pd_ui_class(QtCore.QObject):
     def __init__(self, parent):
         self.parent = parent
         super().__init__()
+        self.transfer_table_list = []
+        self.pixmap_buffer_dict = {}
         self.init_settings()
         self.input_table()
         self.transfer_table()
@@ -34,9 +36,6 @@ class pd_ui_class(QtCore.QObject):
                    'sort_comboBox': 'input_sort_comboBox'}
         self.input_table = PictureDirTable.Pic_Dir_Table(self, 'input_table')
         self.input_table.setup_connects(self.parent, ui_dict)
-        # directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
-        #                   'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
-        # self.input_table.directory_comboBox.insertItems(0, directory_list)
         self.input_table.create_dir_table_data()
         self.input_table.table_from_list()
 
@@ -56,9 +55,6 @@ class pd_ui_class(QtCore.QObject):
                    'sort_comboBox': 'output_sort_comboBox'}
         self.output_table = PictureDirTable.Pic_Dir_Table(self, 'output_table')  # self.parent)
         self.output_table.setup_connects(self.parent, ui_dict)
-        # directory_list = ['C:/Users/Johns Lenovo/Documents/Pictures/I15C07 SW SOS',
-        #                   'C:\\PME_Mirror\\GM_IndyCar\\Vehicle_Data\\Aero\\WT\\PTG\\PME\\15C07\\Photos']
-        # self.output_table.directory_comboBox.insertItems(0, directory_list)
         self.output_table.create_dir_table_data()
         self.output_table.table_from_list()
 
@@ -81,22 +77,25 @@ class pd_ui_class(QtCore.QObject):
         self.save_state()
 
     def input_transfer_selection(self):
-        transfer_list = self.input_table.transfer_selection()
-        self.transfer_table.add_selections(transfer_list)
-        self.transfer_table.table_from_list()
+        selection_list = self.input_table.transfer_selection()
+        self.transfer_table_list.extend(selection_list)
+        # self.transfer_table.add_selections(selection_list)
+        t = self.transfer_table.table
+        self.transfer_table.refresh_table()
         # self.transfer_table.table.selectRow(2)
         # self.transfer_table.table.selectRows(0,2)
-        # t = self.transfer_table.table
-        # t.selectionModel().select(t.model().index(0,0), (QtGui.QItemSelectionModel.SelectCurrent | QtGui.QItemSelectionModel.Rows))
-        # t.selectionModel().select(t.model().index(1,1), (QtGui.QItemSelectionModel.Select | QtGui.QItemSelectionModel.Rows))
+        t.selectionModel().select(t.model().index(0,0), (QtGui.QItemSelectionModel.SelectCurrent | QtGui.QItemSelectionModel.Rows))
+        t.selectionModel().select(t.model().index(1,1), (QtGui.QItemSelectionModel.Select | QtGui.QItemSelectionModel.Rows))
         #  t.item(0,0).setSelected(True)
         #  t.item(2,0).setSelected(True)
-        self.input_table.table_from_list()
+        self.input_table.refresh_table()
 
     def input_untransfer_selection(self):
-        transfer_list = self.transfer_table.transfer_selection()
-        self.input_table.add_selections(transfer_list)
-        self.transfer_table.table_from_list()
+        selection_list = self.transfer_table.transfer_selection()
+        for file_pack in selection_list:
+            self.transfer_table_list.remove(file_pack)
+        # self.input_table.add_selections(selection_list)
+        self.transfer_table.refresh_table()
         self.input_table.refresh_table()
 
     def image_paste_into_transfer(self, mime_data):
@@ -107,11 +106,13 @@ class pd_ui_class(QtCore.QObject):
         self.input_transfer_selection()
 
     def output_transfer_selection(self):
-        transfer_list = self.transfer_table.transfer_selection()
+        selection_list = self.transfer_table.transfer_selection()
+        for file_pack in selection_list:
+            self.transfer_table_list.remove(file_pack)
         output_path = self.output_table.directory_comboBox.currentText()  # self.output_table.directory_lineEdit.text()
         increment_letter = self.parent.pd_increment_letter_lineEdit.text()
-        for i in range(len(transfer_list)):
-            file_item = transfer_list[i]
+        for i in range(len(selection_list)):
+            file_item = selection_list[i]
             file_type = file_item[0][file_item[0].find('.'):]
             for j in range(1000):
                 inc_letter = letter_increment(increment_letter, j)
@@ -125,18 +126,17 @@ class pd_ui_class(QtCore.QObject):
             send2trash(file_item[2])
             file_item[0] = os.path.basename(new_file)
             file_item[2] = new_file
-            transfer_list[i] = file_item
-        self.output_table.add_selections(transfer_list)
-        self.transfer_table.table_from_list()
+            selection_list[i] = file_item
         self.input_table.refresh_table()
+        self.transfer_table.refresh_table()
         self.output_table.refresh_table()
 
     def output_untransfer_selection(self):
-        transfer_list = self.output_table.transfer_selection()
+        selection_list = self.output_table.transfer_selection()
         input_path = self.input_table.directory_comboBox.currentText()
-        for i in range(len(transfer_list)):
-            file_item = transfer_list[i]
-            new_file = input_path + '/' + file_item[0]
+        for i in range(len(selection_list)):
+            file_item = selection_list[i]
+            new_file = input_path + '\\' + file_item[0]
             if os.path.exists(new_file):
                 dot_place = new_file.find('.')
                 file_type = new_file[dot_place:]
@@ -146,14 +146,12 @@ class pd_ui_class(QtCore.QObject):
                     new_file = str(file_root) + str(letter_increment(increment_letter, j)) + file_type
                     if os.path.exists(new_file) is False:
                         break
-            # os.rename(file_item[2], new_file)
             shutil.copy2(file_item[2], new_file)
             send2trash(file_item[2])
-            file_item[0] = os.path.basename(new_file)
-            file_item[2] = new_file
-            transfer_list[i] = file_item
-        self.transfer_table.add_selections(transfer_list)
-        self.transfer_table.table_from_list()
+            file_pack = self.transfer_table.create_file_pack(new_file)
+            self.transfer_table_list.append(file_pack)
+        self.input_table.refresh_table()
+        self.transfer_table.refresh_table()
         self.output_table.refresh_table()
 
 
