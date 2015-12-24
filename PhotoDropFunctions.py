@@ -41,7 +41,8 @@ class pd_ui_class(QtCore.QObject):
 
     def transfer_table(self):
         ui_dict = {'table': 'transfer_tableWidget',
-                   'checkbox': 'transfer_checkBox'}
+                   'checkbox': 'transfer_checkBox',
+                   'directory_comboBox': 'input_directory_comboBox'}
         self.transfer_table = PictureDirTable.Pic_Dir_Table(self, 'transfer_table')  # self.parent)
         self.transfer_table.setup_connects(self.parent, ui_dict)
         self.transfer_table.pics_in_dir = []
@@ -64,6 +65,9 @@ class pd_ui_class(QtCore.QObject):
         self.parent.pd_transfer_output_trans_pushButton.clicked.connect(self.output_transfer_selection)
         self.parent.pd_untransfer_output_trans_pushButton.clicked.connect(self.output_untransfer_selection)
         self.parent.pd_last_run_pushButton.clicked.connect(self.retrieve_last_run_number)
+        self.switch_move_or_copy()  # to init text
+        self.parent.pd_move_or_copy_pushButton.clicked.connect(self.switch_move_or_copy)
+        #  State Saves
         self.parent.pd_run_number_spinBox.valueChanged.connect(self.save_state)
         self.parent.pd_prefix_lineEdit.textChanged.connect(self.save_state)
         self.parent.pd_increment_letter_lineEdit.textChanged.connect(self.save_state)
@@ -81,7 +85,7 @@ class pd_ui_class(QtCore.QObject):
         self.transfer_table_list.extend(selection_list)
         self.transfer_table.refresh_table()
         sel_pics_list = [item[0] for item in selection_list]
-        selection_carry(self.transfer_table.table, sel_pics_list)
+        self.selection_carry(self.transfer_table.table, sel_pics_list)
         self.input_table.refresh_table()
 
     def input_untransfer_selection(self):
@@ -115,10 +119,8 @@ class pd_ui_class(QtCore.QObject):
                 if os.path.exists(new_file) is False:
                     break
             shutil.copy2(file_item[2], new_file)
-            send2trash(file_item[2])
-            # file_item[0] = os.path.basename(new_file)
-            # file_item[2] = new_file
-            # selection_list[i] = file_item
+            if self.is_switch_move():
+                send2trash(file_item[2])
         self.input_table.refresh_table()
         self.transfer_table.refresh_table()
         self.output_table.refresh_table()
@@ -140,25 +142,44 @@ class pd_ui_class(QtCore.QObject):
                     if os.path.exists(new_file) is False:
                         break
             shutil.copy2(file_item[2], new_file)
-            send2trash(file_item[2])
+            if self.is_switch_move():
+                send2trash(file_item[2])
             file_pack = self.transfer_table.create_file_pack(new_file)
             self.transfer_table_list.append(file_pack)
             select_list_carry.append(new_file[new_file.rfind("\\")+1:])
         self.input_table.refresh_table()
         self.transfer_table.refresh_table()
-        selection_carry(self.transfer_table.table, select_list_carry)
+        self.selection_carry(self.transfer_table.table, select_list_carry)
         self.output_table.refresh_table()
 
+    def switch_move_or_copy(self):
+        if self.is_switch_move():
+            button = "Move"
+            switch = "Copy"
+        else:
+            button = "Copy"
+            switch = "Move"
+        button_str = "Switch to " + button
+        label_str = switch + "\nbetween directories"
+        self.parent.pd_move_or_copy_pushButton.setText(button_str)
+        self.parent.pd_move_or_copy_label.setText(label_str)
 
-def selection_carry(table, selection_list):
-    model = table.model()
-    sel_model = table.selectionModel()
-    for t_row in range(model.rowCount()):
-        data = model.index(t_row, 0).data(0)  # 0 in data(0) being the Qt::DisplayRole
-        pic_name = data[:data.find('\n')]
-        if pic_name in selection_list:
-            sel_model.select(model.index(t_row, 0), (QtGui.QItemSelectionModel.Select |
-                                                     QtGui.QItemSelectionModel.Rows))
+    def is_switch_move(self):
+        if 'Move' in self.parent.pd_move_or_copy_label.text():
+            return True
+        else:
+            return False
+
+
+    def selection_carry(self, table, selection_list):
+        model = table.model()
+        sel_model = table.selectionModel()
+        for t_row in range(model.rowCount()):
+            data = model.index(t_row, 0).data(0)  # 0 in data(0) being the Qt::DisplayRole
+            pic_name = data[:data.find('\n')]
+            if pic_name in selection_list:
+                sel_model.select(model.index(t_row, 0), (QtGui.QItemSelectionModel.Select |
+                                                         QtGui.QItemSelectionModel.Rows))
 
 
 def letter_increment(letters, increment):

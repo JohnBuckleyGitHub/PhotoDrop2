@@ -15,50 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="10" colspan="2">
-     <widget class="QComboBox" name="output_sort_comboBox"/>
-    </item>
-    <item row="3" column="9">
-     <widget class="QLabel" name="label_7">
-      <property name="text">
-       <string>Sort Scheme</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="5" rowspan="7" colspan="3">
-     <widget class="TableWithPaste" name="transfer_tableWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>300</width>
-        <height>700</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="9" rowspan="7" colspan="3">
-     <widget class="TableWithPaste" name="output_directory_tableWidget">
-      <property name="minimumSize">
-       <size>
-        <width>300</width>
-        <height>700</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="4">
-     <widget class="QPushButton" name="pd_untransfer_input_trans_pushButton">
-      <property name="text">
-       <string>&lt;&lt;&lt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="12">
+    <item row="10" column="12">
      <spacer name="horizontalSpacer_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -74,31 +31,144 @@
       </property>
      </spacer>
     </item>
-    <item row="6" column="8">
-     <widget class="QPushButton" name="pd_untransfer_output_trans_pushButton">
+    <item row="3" column="10" colspan="2">
+     <widget class="QComboBox" name="output_sort_comboBox"/>
+    </item>
+    <item row="3" column="9">
+     <widget class="QLabel" name="label_7">
       <property name="text">
-       <string>&lt;&lt;&lt;</string>
+       <string>Sort Scheme</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="8">
-     <spacer name="horizontalSpacer_4">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Preferred</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
+    <item row="4" column="9" rowspan="11" colspan="3">
+     <widget class="TableWithPaste" name="output_directory_tableWidget">
+      <property name="minimumSize">
        <size>
-        <width>40</width>
-        <height>20</height>
+        <width>300</width>
+        <height>700</height>
        </size>
       </property>
-     </spacer>
+     </widget>
     </item>
-    <item row="3" column="2" colspan="2">
-     <widget class="QComboBox" name="input_sort_comboBox"/>
+    <item row="2" column="6">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Run Number</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="5">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Prefix</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="6">
+     <widget class="QPushButton" name="pd_last_run_pushButton">
+      <property name="text">
+       <string>Last Run</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="7">
+     <widget class="QCheckBox" name="transfer_checkBox">
+      <property name="text">
+       <string>Load Pictures</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="7">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Increment Letter</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="input_refresh_pushButton">
+      <property name="text">
+       <string>Refresh Table</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2" colspan="2">
+     <widget class="TidyComboBox" name="input_directory_comboBox"/>
+    </item>
+    <item row="1" column="5">
+     <widget class="QPushButton" name="pd_database_settings_pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Run DB Settings</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Input Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="9">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Storage Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="input_browse_pushButton">
+      <property name="text">
+       <string>Browse Input Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QCheckBox" name="input_picture_checkBox">
+      <property name="text">
+       <string>Load Pictures</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="11">
+     <widget class="QCheckBox" name="output_picture_checkBox">
+      <property name="text">
+       <string>Load Pictures</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="10" colspan="2">
+     <widget class="TidyComboBox" name="output_directory_comboBox"/>
+    </item>
+    <item row="1" column="10">
+     <widget class="QPushButton" name="output_browse_pushButton">
+      <property name="text">
+       <string>Browse Output Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="9">
+     <widget class="QPushButton" name="output_refresh_pushButton">
+      <property name="text">
+       <string>Refresh Table</string>
+      </property>
+     </widget>
     </item>
     <item row="4" column="0">
      <spacer name="horizontalSpacer">
@@ -116,7 +186,26 @@
       </property>
      </spacer>
     </item>
-    <item row="4" column="1" rowspan="7" colspan="3">
+    <item row="3" column="2" colspan="2">
+     <widget class="QComboBox" name="input_sort_comboBox"/>
+    </item>
+    <item row="4" column="8">
+     <spacer name="horizontalSpacer_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Preferred</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="4" column="1" rowspan="11" colspan="3">
      <widget class="TableWithPaste" name="input_directory_tableWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -132,17 +221,10 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="4">
-     <widget class="QPushButton" name="pd_transfer_input_trans_pushButton">
+    <item row="3" column="1">
+     <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>&gt;&gt;&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="8">
-     <widget class="QPushButton" name="pd_transfer_output_trans_pushButton">
-      <property name="text">
-       <string>&gt;&gt;&gt;</string>
+       <string>Sort Scheme</string>
       </property>
      </widget>
     </item>
@@ -161,13 +243,6 @@
        </size>
       </property>
      </spacer>
-    </item>
-    <item row="3" column="1">
-     <widget class="QLabel" name="label_6">
-      <property name="text">
-       <string>Sort Scheme</string>
-      </property>
-     </widget>
     </item>
     <item row="3" column="7">
      <widget class="QLineEdit" name="pd_increment_letter_lineEdit">
@@ -196,124 +271,151 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="6">
-     <widget class="QLabel" name="label_5">
+    <item row="13" column="8">
+     <widget class="QPushButton" name="pd_move_or_copy_pushButton">
       <property name="text">
-       <string>Run Number</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       <string>Switch to Copy</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="5">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Prefix</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="7">
-     <widget class="QLabel" name="label_4">
-      <property name="text">
-       <string>Increment Letter</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="7">
-     <widget class="QCheckBox" name="transfer_checkBox">
-      <property name="text">
-       <string>Load Pictures</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="6">
-     <widget class="QPushButton" name="pd_last_run_pushButton">
-      <property name="text">
-       <string>Last Run</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="5">
-     <widget class="QPushButton" name="pd_database_settings_pushButton">
+    <item row="4" column="5" rowspan="11" colspan="3">
+     <widget class="TableWithPaste" name="transfer_tableWidget">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="text">
-       <string>Run DB Settings</string>
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>700</height>
+       </size>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Input Directory</string>
+    <item row="5" column="8">
+     <widget class="QGroupBox" name="move_or_copy_groupBox">
+      <property name="minimumSize">
+       <size>
+        <width>240</width>
+        <height>240</height>
+       </size>
       </property>
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="pd_move_or_copy_label">
+         <property name="font">
+          <font>
+           <pointsize>6</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>COPIED should be switched</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::AutoText</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pd_transfer_output_trans_pushButton">
+         <property name="text">
+          <string>&gt;&gt;&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pd_untransfer_output_trans_pushButton">
+         <property name="text">
+          <string>&lt;&lt;&lt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
-    <item row="2" column="2" colspan="2">
-     <widget class="TidyComboBox" name="input_directory_comboBox"/>
-    </item>
-    <item row="1" column="1">
-     <widget class="QPushButton" name="input_refresh_pushButton">
-      <property name="text">
-       <string>Refresh Table</string>
+    <item row="5" column="4">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="minimumSize">
+       <size>
+        <width>240</width>
+        <height>240</height>
+       </size>
       </property>
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pd_transfer_input_trans_pushButton">
+         <property name="text">
+          <string>&gt;&gt;&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pd_untransfer_input_trans_pushButton">
+         <property name="text">
+          <string>&lt;&lt;&lt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+      <zorder>pd_transfer_input_trans_pushButton</zorder>
+      <zorder>pd_untransfer_input_trans_pushButton</zorder>
+      <zorder>pd_untransfer_input_trans_pushButton</zorder>
+      <zorder>pd_untransfer_input_trans_pushButton</zorder>
+      <zorder>verticalSpacer_3</zorder>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QPushButton" name="input_browse_pushButton">
-      <property name="text">
-       <string>Browse Input Directory</string>
+    <item row="7" column="4" rowspan="2">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-     </widget>
-    </item>
-    <item row="1" column="3">
-     <widget class="QCheckBox" name="input_picture_checkBox">
-      <property name="text">
-       <string>Load Pictures</string>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
       </property>
-     </widget>
+     </spacer>
     </item>
-    <item row="2" column="9">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Storage Directory</string>
+    <item row="7" column="8">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-     </widget>
-    </item>
-    <item row="2" column="10" colspan="2">
-     <widget class="TidyComboBox" name="output_directory_comboBox"/>
-    </item>
-    <item row="1" column="11">
-     <widget class="QCheckBox" name="output_picture_checkBox">
-      <property name="text">
-       <string>Load Pictures</string>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
       </property>
-     </widget>
-    </item>
-    <item row="1" column="10">
-     <widget class="QPushButton" name="output_browse_pushButton">
-      <property name="text">
-       <string>Browse Output Directory</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="9">
-     <widget class="QPushButton" name="output_refresh_pushButton">
-      <property name="text">
-       <string>Refresh Table</string>
-      </property>
-     </widget>
+     </spacer>
     </item>
    </layout>
   </widget>

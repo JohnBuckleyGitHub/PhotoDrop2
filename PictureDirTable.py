@@ -18,10 +18,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         super().__init__()  # parent)
         self.parent = parent
         self.name = name
-        # self.checkbox = None
         self.table_parameters()
         self.process_table_parameters()
-        # self.pixmap_buffer_dict = {}
         self.thread_pool = QtCore.QThreadPool()
 
     def setup_connects(self, grandparent, ui_dict):
@@ -34,12 +32,13 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         if self.name is not 'output_table':
             self.table.itemDropped.connect(self.append_from_event)
             self.table.itemUrlPasted.connect(self.append_from_event)
+            self.table.itemImageDelete.connect(self.delete_selection)
             if self.name is 'transfer_table':
                 self.table.itemImagePasted.connect(self.parent.image_paste_into_transfer)
-                self.table.itemImageDelete.connect(self.parent.input_untransfer_selection)
+                # self.table.itemImageDelete.connect(self.parent.input_untransfer_selection)
             else:
                 self.table.itemImagePasted.connect(self.save_image_from_paste)
-                self.table.itemImageDelete.connect(self.delete_selection)
+                # self.table.itemImageDelete.connect(self.delete_selection)
         if self.name is not 'transfer_table':
             # self.directory_comboBox = TidyComboBox(self.primitive_comboBox, 10)
             self.directory_comboBox.max_items = 10
@@ -53,6 +52,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             self.refresh_button.clicked.connect(self.refresh_table)
             self.directory_comboBox.currentIndexChanged.connect(self.sort_directory_combobox)
             self.sort_comboBox.currentIndexChanged.connect(self.refresh_table)
+        self.directory_path = kustomWidgets.dir_clean(self.directory_comboBox.currentText())
 
     def table_parameters(self):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
@@ -144,23 +144,32 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def append_from_event(self, event):
         if type(event) == QtGui.QDropEvent:
-            for urls in event.mimeData().urls():
-                file_path = urls.path()[1:]
+            print("QDropEvent")
+            if event.mimeData().urls():
+                for urls in event.mimeData().urls():
+                    print("got here")
+                    file_path = urls.path()[1:]
         elif type(event) == QtCore.QMimeData:
+            print("QMimeData")
             for urls in event.urls():
                 file_path = urls.path()[1:]
         else:
             print("somehow other")
             return
-        file_name = file_path[file_path.rfind('\\'):]
+        file_name = file_path[file_path.rfind('/'):]
         new_file = self.directory_path + '\\' + file_name
         try:
             shutil.copy2(file_path, new_file)
-        except:  # should specify exception
+        except shutil.SameFileError:
             file_format = new_file[new_file.rfind('.')+1:]
             new_file = self.highest_temp(file_format)
             shutil.copy2(file_path, new_file)
+        if self.name == 'transfer_table':
+            file_pack = self.create_file_pack(new_file)
+            self.parent.transfer_table_list.append(file_pack)
+        old_selections = self.table.selectionModel().selectedRows()
         self.refresh_table()
+        self.parent.selection_carry(self.parent.transfer_table.table, old_selections)
 
     def save_image_from_paste(self, mime_data):
         file_format = 'jpg'
@@ -241,10 +250,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def delete_selection(self):
         indices = self.table.selectionModel().selectedRows()
-        # indices = sorted(indices, key=lambda x: x.row(), reverse=True)
         for del_num in indices:
             send2trash(self.pics_in_dir[del_num.row()][2])
-            # del self.pics_in_dir[del_num.row()]
+        if self.name == 'transfer_table':
+            self.parent.input_untransfer_selection()
         self.refresh_table()
 
     def save_table_state(self):
