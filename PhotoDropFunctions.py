@@ -79,22 +79,15 @@ class pd_ui_class(QtCore.QObject):
     def input_transfer_selection(self):
         selection_list = self.input_table.transfer_selection()
         self.transfer_table_list.extend(selection_list)
-        # self.transfer_table.add_selections(selection_list)
-        t = self.transfer_table.table
         self.transfer_table.refresh_table()
-        # self.transfer_table.table.selectRow(2)
-        # self.transfer_table.table.selectRows(0,2)
-        t.selectionModel().select(t.model().index(0,0), (QtGui.QItemSelectionModel.SelectCurrent | QtGui.QItemSelectionModel.Rows))
-        t.selectionModel().select(t.model().index(1,1), (QtGui.QItemSelectionModel.Select | QtGui.QItemSelectionModel.Rows))
-        #  t.item(0,0).setSelected(True)
-        #  t.item(2,0).setSelected(True)
+        sel_pics_list = [item[0] for item in selection_list]
+        selection_carry(self.transfer_table.table, sel_pics_list)
         self.input_table.refresh_table()
 
     def input_untransfer_selection(self):
         selection_list = self.transfer_table.transfer_selection()
         for file_pack in selection_list:
             self.transfer_table_list.remove(file_pack)
-        # self.input_table.add_selections(selection_list)
         self.transfer_table.refresh_table()
         self.input_table.refresh_table()
 
@@ -121,18 +114,18 @@ class pd_ui_class(QtCore.QObject):
                 new_file = output_path + '/' + new_name
                 if os.path.exists(new_file) is False:
                     break
-            # os.rename(file_item[2], new_file)
             shutil.copy2(file_item[2], new_file)
             send2trash(file_item[2])
-            file_item[0] = os.path.basename(new_file)
-            file_item[2] = new_file
-            selection_list[i] = file_item
+            # file_item[0] = os.path.basename(new_file)
+            # file_item[2] = new_file
+            # selection_list[i] = file_item
         self.input_table.refresh_table()
         self.transfer_table.refresh_table()
         self.output_table.refresh_table()
 
     def output_untransfer_selection(self):
         selection_list = self.output_table.transfer_selection()
+        select_list_carry = []
         input_path = self.input_table.directory_comboBox.currentText()
         for i in range(len(selection_list)):
             file_item = selection_list[i]
@@ -150,9 +143,22 @@ class pd_ui_class(QtCore.QObject):
             send2trash(file_item[2])
             file_pack = self.transfer_table.create_file_pack(new_file)
             self.transfer_table_list.append(file_pack)
+            select_list_carry.append(new_file[new_file.rfind("\\")+1:])
         self.input_table.refresh_table()
         self.transfer_table.refresh_table()
+        selection_carry(self.transfer_table.table, select_list_carry)
         self.output_table.refresh_table()
+
+
+def selection_carry(table, selection_list):
+    model = table.model()
+    sel_model = table.selectionModel()
+    for t_row in range(model.rowCount()):
+        data = model.index(t_row, 0).data(0)  # 0 in data(0) being the Qt::DisplayRole
+        pic_name = data[:data.find('\n')]
+        if pic_name in selection_list:
+            sel_model.select(model.index(t_row, 0), (QtGui.QItemSelectionModel.Select |
+                                                     QtGui.QItemSelectionModel.Rows))
 
 
 def letter_increment(letters, increment):
