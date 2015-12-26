@@ -314,7 +314,7 @@
           </font>
          </property>
          <property name="text">
-          <string>COPIED should be switched</string>
+          <string>COPY should be switched</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>

@@ -27,6 +27,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             setattr(self, key, getattr(grandparent, ui_dict[key]))
         self.table.cellDoubleClicked.connect(self.load_picture)
         self.checkbox.clicked.connect(self.table_from_list)
+        self.drag_register = []
+        self.table.itemLeft.connect(self.send_items_to_drag)
         output = int(self.parent.settings.value((self.name + '_checkbox'), QtCore.Qt.Unchecked))
         self.checkbox.setCheckState(output)
         if self.name is not 'output_table':
@@ -144,18 +146,47 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def append_from_event(self, event):
         if type(event) == QtGui.QDropEvent:
-            print("QDropEvent")
+            # print("QDropEvent")
             if event.mimeData().urls():
                 for urls in event.mimeData().urls():
                     print("got here")
                     file_path = urls.path()[1:]
+                    self.add_file(file_path)
+            try:
+                for urls in event.urls():
+                    file_path = urls.path()[1:]
+                    self.add_file(file_path)
+            else:
+                dt = self.parent.drag_items_table
+            if dt == 'input_table' and self.name == 'transfer_table':
+                self.parent.input_transfer_selection()
+            elif dt == 'transfer_table' and self.name == 'input_table':
+                self.parent.input_untransfer_selection()
+            elif dt == 'output_table' and self.name == 'transfer_table':
+                self.parent.output_untransfer_selection()
+            elif dt == 'transfer_table' and self.name == 'output_table':
+                self.parent.output_untransfer_selection()
+            else:
+                print('hit the else condition')
+                print(dt)
+                print(self.name)
+                return
         elif type(event) == QtCore.QMimeData:
-            print("QMimeData")
+            # print("QMimeData")
             for urls in event.urls():
                 file_path = urls.path()[1:]
+                self.add_file(file_path)
+        elif type(event) == QtGui.QDragMoveEvent:
+            
         else:
-            print("somehow other")
+            print("somehow other: " + str(self.drag_register))
+            print(type(event))
             return
+        old_selections = self.table.selectionModel().selectedRows()
+        self.refresh_table()
+        self.parent.selection_carry(self.parent.transfer_table.table, old_selections)
+
+    def add_file(self, file_path):
         file_name = file_path[file_path.rfind('/'):]
         new_file = self.directory_path + '\\' + file_name
         try:
@@ -167,9 +198,6 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         if self.name == 'transfer_table':
             file_pack = self.create_file_pack(new_file)
             self.parent.transfer_table_list.append(file_pack)
-        old_selections = self.table.selectionModel().selectedRows()
-        self.refresh_table()
-        self.parent.selection_carry(self.parent.transfer_table.table, old_selections)
 
     def save_image_from_paste(self, mime_data):
         file_format = 'jpg'
@@ -240,10 +268,15 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         for flist in transfer_list:
             self.pics_in_dir.append(flist)
 
+    def send_items_to_drag(self):
+        self.drag_register = self.transfer_selection()
+        self.parent.drag_items_table = self.name
+        print(self.parent.drag_items_table)
+
     def transfer_selection(self):
         transfer_list = []
         indices = self.table.selectionModel().selectedRows()
-        indices = sorted(indices, key=lambda x: x.row(), reverse=True)
+        # indices = sorted(indices, key=lambda x: x.row(), reverse=True)
         for index in indices:
             transfer_list.append(self.pics_in_dir[index.row()])
         return transfer_list

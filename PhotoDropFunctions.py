@@ -13,6 +13,7 @@ class pd_ui_class(QtCore.QObject):
         super().__init__()
         self.transfer_table_list = []
         self.pixmap_buffer_dict = {}
+        self.drag_items_table = None
         self.init_settings()
         self.input_table()
         self.transfer_table()
@@ -169,7 +170,6 @@ class pd_ui_class(QtCore.QObject):
             return True
         else:
             return False
-
 
     def selection_carry(self, table, selection_list):
         model = table.model()
