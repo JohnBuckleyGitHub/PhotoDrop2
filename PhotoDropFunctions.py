@@ -37,8 +37,7 @@ class pd_ui_class(QtCore.QObject):
                    'sort_comboBox': 'input_sort_comboBox'}
         self.input_table = PictureDirTable.Pic_Dir_Table(self, 'input_table')
         self.input_table.setup_connects(self.parent, ui_dict)
-        self.input_table.create_dir_table_data()
-        self.input_table.table_from_list()
+        self.input_table.refresh_table()
 
     def transfer_table(self):
         ui_dict = {'table': 'transfer_tableWidget',
@@ -57,8 +56,7 @@ class pd_ui_class(QtCore.QObject):
                    'sort_comboBox': 'output_sort_comboBox'}
         self.output_table = PictureDirTable.Pic_Dir_Table(self, 'output_table')  # self.parent)
         self.output_table.setup_connects(self.parent, ui_dict)
-        self.output_table.create_dir_table_data()
-        self.output_table.table_from_list()
+        self.output_table.refresh_table()
 
     def table_connects(self):
         self.parent.pd_transfer_input_trans_pushButton.clicked.connect(self.input_transfer_selection)

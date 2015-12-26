@@ -35,24 +35,24 @@ class TableWithPaste(QtGui.QTableWidget):
         else:
             event.ignore()
 
-    def dragLeaveEvent(self, event):
-        if event.mimeData().hasUrls:
-            event.accept()
-            self.itemLeft()
-        else:
-            event.ignore()
+    # def dragLeaveEvent(self, event):
+    #     if event.mimeData().hasUrls:
+    #         event.accept()
+    #         self.itemLeft()
+    #     else:
+    #         event.ignore()
 
     def dragMoveEvent(self, event):
-        mimeData = QtCore.QMimeData()
-        mimeData.setText('hello sailor!')
-        drag = QtGui.QDrag(self)
-        drag.setMimeData(mimeData)
+        # mimeData = QtCore.QMimeData()
+        # mimeData.setText('hello sailor!')
+        # drag = QtGui.QDrag(self)
+        # drag.setMimeData(mimeData)
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.CopyAction)
-            print('dragEvent from Table')
-            print(event.mimeData().text())
+            # print('dragEvent from Table')
+            # print(event.mimeData().text())
             event.accept()
-            self.itemDragged.emit(drag)
+            # self.itemDragged.emit(drag)
         else:
             event.ignore()
 
