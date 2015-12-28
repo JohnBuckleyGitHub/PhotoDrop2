@@ -9,12 +9,11 @@ class TableWithPaste(QtGui.QTableWidget):
     itemUrlPasted = QtCore.pyqtSignal(object)
     itemImagePasted = QtCore.pyqtSignal(object)
     itemImageDelete = QtCore.pyqtSignal(object)
-    itemLeft = QtCore.pyqtSignal(object)
+    # itemLeft = QtCore.pyqtSignal(object)
     # itemImageScaled = QtCore.pyqtSignal(object)
 
     def __init__(self, parent):
         QtGui.QTableWidget.__init__(self, parent)
-        # super().__init__(parent)
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
@@ -29,30 +28,15 @@ class TableWithPaste(QtGui.QTableWidget):
         self.addAction(deleteAction)
         # self.addAction(quitAction)
 
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls:
-            event.accept()
-        else:
-            event.ignore()
-
-    # def dragLeaveEvent(self, event):
-    #     if event.mimeData().hasUrls:
-    #         event.accept()
-    #         self.itemLeft()
-    #     else:
-    #         event.ignore()
+    def dragLeaveEvent(self, event):
+        event.accept()
+        self.itemDragged.emit(event)
 
     def dragMoveEvent(self, event):
-        # mimeData = QtCore.QMimeData()
-        # mimeData.setText('hello sailor!')
-        # drag = QtGui.QDrag(self)
-        # drag.setMimeData(mimeData)
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.CopyAction)
-            # print('dragEvent from Table')
-            # print(event.mimeData().text())
             event.accept()
-            # self.itemDragged.emit(drag)
+            self.itemDragged.emit(event)
         else:
             event.ignore()
 

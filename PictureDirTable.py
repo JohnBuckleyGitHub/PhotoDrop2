@@ -22,13 +22,15 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         self.table_parameters()
         self.process_table_parameters()
         self.thread_pool = QtCore.QThreadPool()
+        self.refresh_counter = 0
 
     def setup_connects(self, grandparent, ui_dict):
         for key in ui_dict:
             setattr(self, key, getattr(grandparent, ui_dict[key]))
         self.table.cellDoubleClicked.connect(self.load_picture)
         self.checkbox.clicked.connect(self.table_from_list)
-        self.table.itemLeft.connect(self.send_items_to_drag)
+        self.table.pressed.connect(self.set_items_to_drag)
+        # self.table.itemDragged.connect(self.send_items_to_drag)
         output = int(self.parent.settings.value((self.name + '_checkbox'), QtCore.Qt.Unchecked))
         self.checkbox.setCheckState(output)
         if self.name is not 'output_table':
@@ -102,7 +104,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             col = 0
             full_text = self.pics_in_dir[i][0] + "\n \n \n" + self.pics_in_dir[i][1]
             item = QtGui.QTableWidgetItem(full_text)
-            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable |
+                          QtCore.Qt.ItemIsDragEnabled)
             item.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
             table.setItem(i, col, item)
             col = 1
@@ -116,9 +119,11 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             else:
                 item.setData(QtCore.Qt.DisplayRole, self.pics_in_dir[i][1])
             item.setTextAlignment(QtCore.Qt.AlignCenter)
-            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable |
+                          QtCore.Qt.ItemIsDragEnabled)
             table.setItem(i, col, item)
         table.setSelectionBehavior(table.SelectRows)
+        self.refresh_counter += 1
 
     def create_dir_table_data(self):
         self.pics_in_dir = []
@@ -141,7 +146,30 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         modified_time = os.path.getmtime(file_path)
         return [filename, creation_time, file_path, modified_time]
 
+    # def send_items_to_drag(self):
+    #     if self.parent.drag_items_table:
+    #         print('table alredy named as ' + str(self.parent.drag_items_table))
+    #         return
+    #     print('table being named as ' + str(self.parent.drag_items_table))
+    #     self.parent.drag_items_table = self.name
+    #     self.parent.drag_register = self.transfer_selection()
+
+    def set_items_to_drag(self):
+        self.parent.drag_items_table = self.name
+        self.parent.drag_register = self.transfer_selection()
+
     def process_drop(self, event):
+        if self.parent.drag_items_table:
+            dt = self.parent.drag_items_table
+            if dt == 'input_table' and self.name == 'transfer_table':
+                self.parent.input_transfer_selection()
+            elif dt == 'transfer_table' and self.name == 'input_table':
+                self.parent.input_untransfer_selection()
+            elif dt == 'output_table' and self.name == 'transfer_table':
+                self.parent.output_untransfer_selection()
+            elif dt == 'transfer_table' and self.name == 'output_table':
+                self.parent.output_untransfer_selection()
+            self.parent.drag_items_table = None
         if event.mimeData().hasUrls():
             self.process_paste(event.mimeData())
 
@@ -228,16 +256,12 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
     def refresh_table(self):
         self.create_dir_table_data()
         self.table_from_list()
+        self.parent.drag_items_table = None
 
     def refresh_table_keep_sel(self):
         old_selections = self.table.selectionModel().selectedRows()
         self.refresh_table()
         self.parent.selection_carry(self.table, old_selections)
-
-    def send_items_to_drag(self):
-        self.drag_register = self.transfer_selection()
-        self.parent.drag_items_table = self.name
-        print(self.parent.drag_items_table)
 
     def transfer_selection(self):
         transfer_list = []
