@@ -13,7 +13,7 @@ class pd_ui_class(QtCore.QObject):
         super().__init__()
         self.transfer_table_list = []
         self.pixmap_buffer_dict = {}
-        self.drag_items_table = None
+        self.active_table = None
         self.init_settings()
         self.input_table()
         self.transfer_table()
@@ -94,12 +94,14 @@ class pd_ui_class(QtCore.QObject):
         self.transfer_table.refresh_table()
         self.input_table.refresh_table()
 
-    def image_paste_into_transfer(self, mime_data):
-        self.parent.input_directory_tableWidget.itemImagePasted.emit(mime_data)
-        last_row = self.parent.input_directory_tableWidget.rowCount() - 1
-        for col in range(self.parent.input_directory_tableWidget.columnCount()):
-            self.parent.input_directory_tableWidget.item(last_row, col).setSelected(True)
-        self.input_transfer_selection()
+    def image_paste(self, mime_data):
+        filename_list = self.input_table.save_image_from_paste(mime_data)
+        self.selection_carry(self.input_table.table, filename_list)
+        if self.active_table is 'transfer_table':
+            self.input_transfer_selection()
+        elif self.active_table is 'output_table':
+            self.input_transfer_selection()
+            self.output_transfer_selection()
 
     def output_transfer_selection(self):
         selection_list = self.transfer_table.transfer_selection()

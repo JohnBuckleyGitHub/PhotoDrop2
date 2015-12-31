@@ -33,6 +33,7 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
         self.combo_dict = {}
         for item in self.combo_list:
             self.combo_dict[item] = item + suffix
+        self.value_dict = {}
 
     def save_settings(self):
         cd = self.combo_dict
@@ -50,14 +51,23 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
             if self.settings.value((cd[cbox]), []):
                 cbox_obj.insertItems(0, self.settings.value((cd[cbox]), []))
 
+    def set_value_dict(self):
+        for item in self.combo_list:
+            self.value_dict[item] = getattr(self, self.combo_dict[item] + '.currentText()')
+
     def create_conn_string(self):
+        self.set_value_dict()
         server = getattr(self, self.combo_dict['server_name'] + '.currentText()')
         database = getattr(self, self.combo_dict['db_name'] + '.currentText()')
         print(server)
         print(database)
-        cs1 = "Driver={SQL Server};Server=" + server + ";"
-        cs2 = "Database=" + database + ";"
-        cs3 = "trusted_connection=yes;"
+        cs1 = "Driver={SQL Server};Server=" + self.value_dict['server_name'] + ";"
+        cs2 = "Database=" + self.value_dict['db_name'] + ";"
+        if self.windows_auth_checkBox.isChecked():
+            cs3 = "trusted_connection=yes;"
+        else:
+            uid = "User Id=" + str(self.value_dict['login']) + ";"
+            cs3 = uid + "Password=" + str(self.value_dict['password']) + ";"
         self.conn_string = cs1 + cs2 + cs3
         print("conn_string")
 

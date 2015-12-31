@@ -4,7 +4,6 @@ from send2trash import send2trash
 import glob
 import time
 import datetime
-import fnmatch
 import shutil
 from PyQt4 import QtCore
 from PyQt4 import QtGui
@@ -28,19 +27,14 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         for key in ui_dict:
             setattr(self, key, getattr(grandparent, ui_dict[key]))
         self.table.cellDoubleClicked.connect(self.load_picture)
+        self.table.pressed.connect(self.set_current_table)
         self.checkbox.clicked.connect(self.table_from_list)
-        self.table.pressed.connect(self.set_items_to_drag)
-        # self.table.itemDragged.connect(self.send_items_to_drag)
         output = int(self.parent.settings.value((self.name + '_checkbox'), QtCore.Qt.Unchecked))
         self.checkbox.setCheckState(output)
-        if self.name is not 'output_table':
-            self.table.itemDropped.connect(self.process_drop)
-            self.table.itemUrlPasted.connect(self.process_paste)
-            self.table.itemImageDelete.connect(self.delete_selection)
-            if self.name is 'transfer_table':
-                self.table.itemImagePasted.connect(self.parent.image_paste_into_transfer)
-            else:
-                self.table.itemImagePasted.connect(self.save_image_from_paste)
+        self.table.itemDropped.connect(self.process_drop)
+        self.table.itemUrlPasted.connect(self.process_paste)
+        self.table.itemImageDelete.connect(self.delete_selection)
+        self.table.itemImagePasted.connect(self.pre_image_paste)
         if self.name is not 'transfer_table':
             self.directory_comboBox.max_items = 10
             self.init_sort_comboBox()
@@ -146,21 +140,13 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         modified_time = os.path.getmtime(file_path)
         return [filename, creation_time, file_path, modified_time]
 
-    # def send_items_to_drag(self):
-    #     if self.parent.drag_items_table:
-    #         print('table alredy named as ' + str(self.parent.drag_items_table))
-    #         return
-    #     print('table being named as ' + str(self.parent.drag_items_table))
-    #     self.parent.drag_items_table = self.name
-    #     self.parent.drag_register = self.transfer_selection()
-
-    def set_items_to_drag(self):
-        self.parent.drag_items_table = self.name
-        self.parent.drag_register = self.transfer_selection()
+    def set_current_table(self):
+        self.parent.active_table = self.name
+        self.parent.select_register = self.transfer_selection()
 
     def process_drop(self, event):
-        if self.parent.drag_items_table:
-            dt = self.parent.drag_items_table
+        if self.parent.active_table:
+            dt = self.parent.active_table
             if dt == 'input_table' and self.name == 'transfer_table':
                 self.parent.input_transfer_selection()
             elif dt == 'transfer_table' and self.name == 'input_table':
@@ -192,6 +178,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             file_pack = self.create_file_pack(new_file)
             self.parent.transfer_table_list.append(file_pack)
 
+    def pre_image_paste(self, mime_data):
+        self.set_current_table()
+        self.parent.image_paste(mime_data)
+
     def save_image_from_paste(self, mime_data):
         file_format = 'jpg'
         qi = QtGui.QImageWriter()
@@ -200,6 +190,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         qi.setFileName(new_file)
         qi.write(mime_data.imageData())
         self.refresh_table()
+        filename = os.path.basename(new_file)
+        return [filename]
 
     def highest_temp(self, file_format):
         file_prefix = 'Temp_'
@@ -261,7 +253,17 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
     def refresh_table_keep_sel(self):
         old_selections = self.table.selectionModel().selectedRows()
         self.refresh_table()
-        self.parent.selection_carry(self.table, old_selections)
+        self.selection_list(old_selections)
+
+    def select_list(self, selection_list):
+        model = self.table.model()
+        sel_model = self.table.selectionModel()
+        for t_row in range(model.rowCount()):
+            data = model.index(t_row, 0).data(0)  # 0 in data(0) being the Qt::DisplayRole
+            pic_name = data[:data.find('\n')]
+            if pic_name in selection_list:
+                sel_model.select(model.index(t_row, 0), (QtGui.QItemSelectionModel.Select |
+                                                         QtGui.QItemSelectionModel.Rows))
 
     def transfer_selection(self):
         transfer_list = []
@@ -272,11 +274,24 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         return transfer_list
 
     def delete_selection(self):
+        if self.name is 'output_table':
+            move_true = self.parent.is_switch_move()
+            if move_true is False:
+                self.parent.switch_move_or_copy()
+            self.parent.output_untransfer_selection()
+            if move_true is False:
+                self.parent.switch_move_or_copy()
+            return
         indices = self.table.selectionModel().selectedRows()
         for del_num in indices:
+            file_path = self.pics_in_dir[del_num.row()][2]
             send2trash(self.pics_in_dir[del_num.row()][2])
-        if self.name == 'transfer_table':
-            self.parent.input_untransfer_selection()
+            if self.name is 'transfer_table':
+                # print('deleting row' + str(del_num.row()))
+                # del self.pics_in_dir[del_num.row()]
+                for file_pack in self.parent.transfer_table_list:
+                    if file_path == file_pack[2]:
+                        self.parent.transfer_table_list.remove(file_pack)
         self.refresh_table()
 
     def save_table_state(self):
@@ -294,7 +309,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                           'Date Modified - Descending': [3, True],
                           'Name - Ascending': [0, False],
                           'Name - Descending': [0, True]}
-        self.sort_comboBox.insertItems(0, sorted(self.sort_dict.keys()))
+        self.sort_comboBox.insertItems(0, sorted(self.sort_dict.keys()))                                                     
 
 
 class SignalEmitter(QtCore.QObject):
