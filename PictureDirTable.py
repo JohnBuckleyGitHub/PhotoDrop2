@@ -288,8 +288,6 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             file_path = self.pics_in_dir[del_num.row()][2]
             send2trash(self.pics_in_dir[del_num.row()][2])
             if self.name is 'transfer_table':
-                # print('deleting row' + str(del_num.row()))
-                # del self.pics_in_dir[del_num.row()]
                 for file_pack in self.parent.transfer_table_list:
                     if file_path == file_pack[2]:
                         self.parent.transfer_table_list.remove(file_pack)

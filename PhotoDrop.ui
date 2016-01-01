@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2678</width>
-    <height>1045</height>
+    <width>1600</width>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,6 +83,9 @@
       <property name="text">
        <string>Load Pictures</string>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="7">
@@ -144,12 +147,18 @@
       <property name="text">
        <string>Load Pictures</string>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="1" column="11">
      <widget class="QCheckBox" name="output_picture_checkBox">
       <property name="text">
        <string>Load Pictures</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -320,7 +329,7 @@
           <enum>Qt::AutoText</enum>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -386,8 +395,6 @@
       </layout>
       <zorder>pd_transfer_input_trans_pushButton</zorder>
       <zorder>pd_untransfer_input_trans_pushButton</zorder>
-      <zorder>pd_untransfer_input_trans_pushButton</zorder>
-      <zorder>pd_untransfer_input_trans_pushButton</zorder>
       <zorder>verticalSpacer_3</zorder>
      </widget>
     </item>
@@ -424,8 +431,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>2678</width>
-     <height>47</height>
+     <width>1600</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
