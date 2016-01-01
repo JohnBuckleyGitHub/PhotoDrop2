@@ -36,7 +36,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         self.table.itemImageDelete.connect(self.delete_selection)
         self.table.itemImagePasted.connect(self.pre_image_paste)
         if self.name is not 'transfer_table':
-            self.directory_comboBox.max_items = 10
+            self.directory_comboBox.setInsertPolicy(QtGui.QComboBox.InsertAtTop)
+            self.directory_comboBox.setMaxCount(10)
             self.init_sort_comboBox()
             self.sort_comboBox.setCurrentIndex(int(self.parent.settings.value(self.name + 'sort_comboBox', 0)))
             if self.parent.settings.value(self.name + '_combo_items', []):
@@ -309,7 +310,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                           'Date Modified - Descending': [3, True],
                           'Name - Ascending': [0, False],
                           'Name - Descending': [0, True]}
-        self.sort_comboBox.insertItems(0, sorted(self.sort_dict.keys()))                                                     
+        self.sort_comboBox.insertItems(0, sorted(self.sort_dict.keys()))
 
 
 class SignalEmitter(QtCore.QObject):
@@ -335,5 +336,3 @@ class LoadImageRunnable(QtCore.QRunnable):
         image = QtGui.QImage(self.image_path)
         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
         self.signal.emit(self.signal.signal, image_scaled, self.col_number, self.row_number)
-
-
