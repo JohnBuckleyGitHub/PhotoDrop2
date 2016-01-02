@@ -54,7 +54,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         # [Header Name, Column Width, Row Height] and None is flexible, Only Max row height is used
         self.table_params = [
                                         ['Filename', 150, None],
-                                        ['Image', 300, 200],
+                                        ['Image', 200, 150],
                                         ]
         self.no_check_row_height = 40
 
@@ -81,7 +81,6 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         table = self.table  # Shortcut for long name
         self.save_table_state()
         table.setRowCount(0)
-        # self.create_dir_table_data()
         table.setColumnCount(self.colcount)
         for col in range(self.colcount):
             table.setColumnWidth(col, self.col_width[col])
@@ -90,14 +89,15 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         table.horizontalHeader().setMovable(False)
         for i in range(len(self.pics_in_dir)):
             table.insertRow(i)
+            pic_id = self.picture_id_from_row(i)
             if self.checkbox.isChecked():
                 table.setRowHeight(i, self.row_height)
-                full_text = self.pics_in_dir[i][0] + "\n \n \n" + self.pics_in_dir[i][1]
             else:
                 table.setRowHeight(i, self.no_check_row_height)
-                full_text = self.pics_in_dir[i][0]
             col = 0
-            full_text = self.pics_in_dir[i][0] + "\n \n \n" + self.pics_in_dir[i][1]
+            full_text = self.pics_in_dir[i][0] + "\n" + self.pics_in_dir[i][1]
+            if pic_id in self.parent.est_run_buffer_dict:
+                full_text += "\n" + str(self.parent.est_run_buffer_dict[pic_id])
             item = QtGui.QTableWidgetItem(full_text)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable |
                           QtCore.Qt.ItemIsDragEnabled)
@@ -106,8 +106,8 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             col = 1
             item = QtGui.QTableWidgetItem()
             if self.checkbox.isChecked():
-                if self.picture_id(i) in self.parent.pixmap_buffer_dict:
-                    item.setData(QtCore.Qt.DecorationRole, self.parent.pixmap_buffer_dict[self.picture_id(i)])
+                if pic_id in self.parent.pixmap_buffer_dict:
+                    item.setData(QtCore.Qt.DecorationRole, self.parent.pixmap_buffer_dict[self.picture_id_from_row(i)])
                 else:
                     item.setData(QtCore.Qt.DisplayRole, self.pics_in_dir[i][1])
                     self.load_picture_from_runnable(self.pics_in_dir[i][2], col, i)
@@ -126,10 +126,15 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
             self.pics_in_dir = self.parent.transfer_table_list.copy()
             return
         self.directory_path = kustomWidgets.dir_clean(self.directory_comboBox.currentText())
+        try:
+            self.db_is_up = self.parent.parent.run_db_conn.status
+        except AttributeError:
+            self.db_is_up = False
         for pic_type in self.picture_type_list:
             tl = glob.glob(self.directory_path + '\\' + pic_type)
             for file_path in tl:
                 file_pack = self.create_file_pack(file_path)
+                self.get_run_number(file_pack)
                 if file_pack not in self.parent.transfer_table_list:
                     self.pics_in_dir.append(file_pack)
         (sort_index, reverse_boolean) = self.sort_dict[self.sort_comboBox.currentText()]
@@ -139,7 +144,29 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         filename = os.path.basename(file_path)
         creation_time = self.get_creation_times(file_path)
         modified_time = os.path.getmtime(file_path)
-        return [filename, creation_time, file_path, modified_time]
+        file_pack = [filename, creation_time, file_path, modified_time]
+        return file_pack
+
+    def get_run_number(self, file_pack):
+        run_code = self.picture_id_from_file_pack(file_pack)
+        if self.db_is_up is False:
+            self.parent.est_run_buffer_dict[run_code] = ""
+            return
+        if run_code in self.parent.est_run_buffer_dict:
+            current_prefix = self.parent.est_run_buffer_dict[run_code][:3]
+            if current_prefix == 'pre' or current_prefix == 'mid':
+                return
+        file_path = file_pack[2]
+        c_time_struct = datetime.datetime.fromtimestamp(os.path.getctime(file_path))
+        self.parent.est_run_buffer_dict[self.picture_id_from_file_pack(file_pack)] = self.find_run_time(c_time_struct)
+
+    def find_run_time(self, c_time_struct):
+        for runtime in enumerate(self.parent.parent.run_times):
+            if runtime[1] is not None:
+                if runtime[1] <= c_time_struct:
+                    return self.parent.parent.run_time_dict[runtime[1]]
+                    break
+        return 'post-R' + str(self.parent.parent.run_db_conn.last_run().Run_Number)
 
     def set_current_table(self):
         self.parent.active_table = self.name
@@ -213,25 +240,16 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         c_time_string = time.strftime("%Y.%m.%d \n%H:%M:%S", c_time_struct.timetuple())
         return c_time_string
 
-    def load_picture_from_runnable(self, image_path, col_number, row_number):
-        worker = LoadImageRunnable(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
-        self.connect(worker.signal, worker.signal.signal, self.show_picture_in_item)
-        self.thread_pool.start(worker)
-
-    def show_picture_in_item(self, image_scaled, col_number, row_number):
-        pixmap = QtGui.QPixmap.fromImage(image_scaled)
-        item = QtGui.QTableWidgetItem()
-        item.setData(QtCore.Qt.DecorationRole, pixmap)
-        self.table.setItem(row_number, col_number, item)
-        self.parent.pixmap_buffer_dict[self.picture_id(row_number)] = pixmap
-
-    def picture_id(self, row):
+    def picture_id_from_row(self, row):
         if row < len(self.pics_in_dir):
             try:
                 return (str(self.pics_in_dir[row][0]) + "//" + str(self.pics_in_dir[row][3]))
             except IndexError:
                 print("row = " + str(row))
         return "Row Unavailable"
+
+    def picture_id_from_file_pack(self, file_pack):
+        return (str(file_pack[0]) + "//" + str(file_pack[3]))
 
     def load_picture(self, row, col):
         file_path = '"' + self.pics_in_dir[row][2] + '"'
@@ -309,6 +327,18 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                           'Name - Ascending': [0, False],
                           'Name - Descending': [0, True]}
         self.sort_comboBox.insertItems(0, sorted(self.sort_dict.keys()))
+
+    def load_picture_from_runnable(self, image_path, col_number, row_number):
+        worker = LoadImageRunnable(image_path, self.col_width[col_number], self.row_height, col_number, row_number)
+        self.connect(worker.signal, worker.signal.signal, self.show_picture_in_item)
+        self.thread_pool.start(worker)
+
+    def show_picture_in_item(self, image_scaled, col_number, row_number):
+        pixmap = QtGui.QPixmap.fromImage(image_scaled)
+        item = QtGui.QTableWidgetItem()
+        item.setData(QtCore.Qt.DecorationRole, pixmap)
+        self.table.setItem(row_number, col_number, item)
+        self.parent.pixmap_buffer_dict[self.picture_id_from_row(row_number)] = pixmap
 
 
 class SignalEmitter(QtCore.QObject):

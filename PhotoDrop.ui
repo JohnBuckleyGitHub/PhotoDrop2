@@ -73,6 +73,9 @@
     </item>
     <item row="1" column="6">
      <widget class="QPushButton" name="pd_last_run_pushButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Last Run</string>
       </property>
@@ -440,14 +443,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TableWithPaste</class>
-   <extends>QTableWidget</extends>
-   <header>table_with_paste.h</header>
-  </customwidget>
-  <customwidget>
    <class>TidyComboBox</class>
    <extends>QComboBox</extends>
    <header>tidy_combo_box.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TableWithPaste</class>
+   <extends>QTableWidget</extends>
+   <header>table_with_paste.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

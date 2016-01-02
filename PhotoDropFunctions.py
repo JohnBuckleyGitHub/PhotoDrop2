@@ -14,6 +14,7 @@ class pd_ui_class(QtCore.QObject):
         self.transfer_table_list = []
         self.pixmap_buffer_dict = {}
         self.active_table = None
+        self.est_run_buffer_dict = {}
         self.init_settings()
         self.input_table()
         self.transfer_table()
@@ -21,7 +22,6 @@ class pd_ui_class(QtCore.QObject):
         self.table_connects()
 
     def init_settings(self):
-        # self.settings = QtCore.QSettings('abc', 'def')
         self.settings = QtCore.QSettings('settings.ini', QtCore.QSettings.IniFormat)
         self.settings.setFallbacksEnabled(False)
         self.parent.pd_run_number_spinBox.setValue(int(self.settings.value('pd_run_number_spinBox', 0)))
@@ -76,8 +76,12 @@ class pd_ui_class(QtCore.QObject):
         self.settings.setValue('pd_prefix_lineEdit', self.parent.pd_prefix_lineEdit.text())
         self.settings.setValue('pd_increment_letter_lineEdit', self.parent.pd_increment_letter_lineEdit.text())
 
+    def check_db_connection(self):
+        self.parent.pd_last_run_pushButton.setEnabled(self.parent.run_db_conn.status)
+
     def retrieve_last_run_number(self):
-        self.save_state()
+        last_run = self.parent.run_db_conn.last_run()
+        self.parent.pd_run_number_spinBox.setValue(int(last_run.Run_Number))
 
     def input_transfer_selection(self):
         selection_list = self.input_table.transfer_selection()
@@ -184,11 +188,7 @@ class pd_ui_class(QtCore.QObject):
 
 def letter_increment(letters, increment):
     init_value = alpha2num(letters.lower())
-    # places = len(letters)
     new_letters = num2alpha(init_value + increment)
-    # new_places = len(new_letters)
-    # if (places - new_places) > 0:
-    #     new_letters = letters[:places-new_places] + new_letters
     if letters.isupper():
         new_letters = new_letters.upper()
     return new_letters

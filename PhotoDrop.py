@@ -18,16 +18,25 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):
         super().__init__()
         uic.loadUi('PhotoDrop.ui', self)  # disable for py2exe
         # self.setupUi(self)  # enable for py2exe
-
         self.setWindowTitle('Photo Renamer')
         self.brush = kustomWidgets.brushstyle()
         self.tables = PhotoDropFunctions.pd_ui_class(self)
-        self.db_window = PhotoDrop_DB.DataBaseWindow()
+        self.db_window = PhotoDrop_DB.DataBaseWindow(self)
+        self.db_window.init_connection()
+        QtGui.QApplication.processEvents()
         self.show()
         # self.signalMapper = QtCore.QSignalMapper(self)
 
         self.pd_database_settings_pushButton.clicked.connect(self.db_window.show_window)
 
+
+def kickoff():
+    myappid = 'Photinput_tableoDrop.Beta.0.1'  # arbitrary string
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    app = QtGui.QApplication(sys.argv)
+    app.setWindowIcon(QtGui.QIcon('icon.png'))
+    window = MyWindow()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
     myappid = 'Photinput_tableoDrop.Beta.0.1'  # arbitrary string
