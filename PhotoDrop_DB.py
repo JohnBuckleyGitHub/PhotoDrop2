@@ -25,6 +25,7 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
         self.cancel_pushButton.clicked.connect(self.cancel_pressed)
         self.use_db_checkBox.clicked.connect(self.grey_out_settings)
         self.windows_auth_checkBox.clicked.connect(self.grey_out_settings)
+        self.parent.run_db_conn = db_conn(self.parent)
 
     def show_window(self):
         self.grey_out_settings()
@@ -81,7 +82,7 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
             uid = "User Id=" + str(self.value_dict['login']) + ";"
             cs3 = uid + "Password=" + str(self.value_dict['password']) + ";"
         conn_string = cs1 + cs2 + cs3
-        self.parent.run_db_conn = db_conn(self.parent, conn_string)
+        self.parent.run_db_conn.set_conn_string(conn_string)
         self.parent.run_db_conn.connection_from_runnable()
 
     def grey_out_settings(self):
@@ -92,9 +93,11 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
         for cbox_obj in self.combo_obj_dict:
             cur_line = self.combo_obj_dict[cbox_obj].currentText()
             self.combo_obj_dict[cbox_obj].combobox_tidy(cur_line)
-        self.init_connection()
+        # self.init_connection()
         self.save_settings()
         self.hide()
+        self.parent.pd_last_run_pushButton.setEnabled(self.parent.run_db_conn.status)
+        self.init_connection()
 
     def cancel_pressed(self):
         self.hide()
@@ -111,14 +114,17 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
 
 class db_conn(QtCore.QObject):
 
-    def __init__(self, parent, conn_string):
+    def __init__(self, parent):
         super().__init__()
         self.parent = parent
         self.status = False
         self.thread_pool = QtCore.QThreadPool()
+
+    def set_conn_string(self, conn_string):
         self.conn_string = conn_string
         pconn = urllib.parse.quote_plus(self.conn_string)
         self.engine = sqlalchemy.create_engine("mssql+pyodbc:///?odbc_connect=%s" % pconn)
+        self.status = False
 
     def connection_from_runnable(self):
         worker = ConnectionRunnable(self.engine)
@@ -176,3 +182,7 @@ class ConnectionRunnable(QtCore.QRunnable):
             self.signal.emit(self.signal.se_signal, True, session, runs)
         except sqlalchemy.exc.ProgrammingError:
             self.signal.emit(self.signal.se_signal, False, None, None)
+            print('SQL connection failure: ProgrammingError')
+        except sqlalchemy.exc.DBAPIError:
+            self.signal.emit(self.signal.se_signal, False, None, None)
+            print('SQL connection failure: DBAPIError')

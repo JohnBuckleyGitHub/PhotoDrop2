@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
+    <width>1920</width>
+    <height>1000</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
     <width>1600</width>
     <height>900</height>
-   </rect>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -434,8 +440,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1600</width>
-     <height>21</height>
+     <width>1920</width>
+     <height>47</height>
     </rect>
    </property>
   </widget>

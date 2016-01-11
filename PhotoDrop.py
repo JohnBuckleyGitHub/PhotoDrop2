@@ -30,7 +30,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):
         self.pd_database_settings_pushButton.clicked.connect(self.db_window.show_window)
 
 
-def kickoff():
+def run_prog():
     myappid = 'Photinput_tableoDrop.Beta.0.1'  # arbitrary string
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     app = QtGui.QApplication(sys.argv)
@@ -39,9 +39,4 @@ def kickoff():
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    myappid = 'Photinput_tableoDrop.Beta.0.1'  # arbitrary string
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-    app = QtGui.QApplication(sys.argv)
-    app.setWindowIcon(QtGui.QIcon('icon.png'))
-    window = MyWindow()
-    sys.exit(app.exec_())
+    run_prog()
