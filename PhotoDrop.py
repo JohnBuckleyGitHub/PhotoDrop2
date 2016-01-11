@@ -22,7 +22,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):
         self.brush = kustomWidgets.brushstyle()
         self.tables = PhotoDropFunctions.pd_ui_class(self)
         self.db_window = PhotoDrop_DB.DataBaseWindow(self)
-        self.db_window.init_connection()
+        self.db_window.set_connection()
         QtGui.QApplication.processEvents()
         self.show()
         # self.signalMapper = QtCore.QSignalMapper(self)

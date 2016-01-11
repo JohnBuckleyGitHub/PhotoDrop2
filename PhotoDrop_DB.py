@@ -3,10 +3,11 @@ from PyQt4 import QtCore
 from PyQt4 import uic  # disable for py2exe
 # import DBWindowUI  # enable for py2exe
 import sqlalchemy
-
 import sqlalchemy.orm
 import sqlalchemy.ext.automap
 import urllib
+import os
+import time
 
 
 class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
@@ -18,14 +19,15 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
         # self.setupUi(self)  # enable for py2exe
         self.settings = QtCore.QSettings('DBsettings.ini', QtCore.QSettings.IniFormat)
         self.parent = parent
-        # print('1st parent' + str(parent))
         self.define_comboboxes()
         self.load_settings()
         self.ok_pushButton.clicked.connect(self.ok_pressed)
         self.cancel_pushButton.clicked.connect(self.cancel_pressed)
-        self.use_db_checkBox.clicked.connect(self.grey_out_settings)
+        self.use_db_checkBox.clicked.connect(self.db_checked)
         self.windows_auth_checkBox.clicked.connect(self.grey_out_settings)
-        self.parent.run_db_conn = db_conn(self.parent)
+        self.use_wsi_checkBox.clicked.connect(self.wsi_checked)
+        self.wsi_browse_pushButton.clicked.connect(self.browse_directory)
+        self.set_conn_type()
 
     def show_window(self):
         self.grey_out_settings()
@@ -37,7 +39,8 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
                 'server_name',
                 'db_name',
                 'login',
-                'password']
+                'password',
+                'wsi_dir']
         self.combo_dict = {}
         self.combo_obj_dict = {}
         for item in self.combo_list:
@@ -58,6 +61,7 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
             self.settings.setValue(cd[cbox], cbox_items)
         self.settings.setValue('use_db_checkBox', str(self.use_db_checkBox.checkState()))
         self.settings.setValue('windows_auth_checkBox', str(self.windows_auth_checkBox.checkState()))
+        self.settings.setValue('use_wsi_checkBox', str(self.use_wsi_checkBox.checkState()))
 
     def load_settings(self):
         cd = self.combo_dict
@@ -67,12 +71,13 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
                 cbox_obj.insertItems(0, self.settings.value((cd[cbox]), []))
         self.use_db_checkBox.setCheckState(int(self.settings.value('use_db_checkBox', QtCore.Qt.Unchecked)))
         self.windows_auth_checkBox.setCheckState(int(self.settings.value('windows_auth_checkBox', QtCore.Qt.Unchecked)))
+        self.use_wsi_checkBox.setCheckState(int(self.settings.value('use_wsi_checkBox', QtCore.Qt.Unchecked)))
 
     def set_value_dict(self):
         for item in self.combo_list:
             self.value_dict[item] = getattr(getattr(self, self.combo_dict[item]), 'currentText')()
 
-    def init_connection(self):
+    def init_db_conn(self):
         self.set_value_dict()
         cs1 = "Driver={SQL Server};Server=" + self.value_dict['server_name'] + ";"
         cs2 = "Database=" + self.value_dict['db_name'] + ";"
@@ -85,21 +90,56 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
         self.parent.run_db_conn.set_conn_string(conn_string)
         self.parent.run_db_conn.connection_from_runnable()
 
+    def browse_directory(self):
+        new_directory_path = QtGui.QFileDialog.getExistingDirectory(None, '', self.wsi_dir_comboBox.currentText())
+        # check directory here
+        self.wsi_dir_comboBox.combobox_tidy(new_directory_path)
+
     def grey_out_settings(self):
         self.db_info_groupBox.setEnabled(self.use_db_checkBox.isChecked())
         self.uid_groupBox.setEnabled(not self.windows_auth_checkBox.isChecked())
+        self.wsi_frame.setEnabled(self.use_wsi_checkBox.isChecked())
+
+    def wsi_checked(self):
+        if self.use_wsi_checkBox.isChecked():
+            self.use_db_checkBox.setCheckState(QtCore.Qt.Unchecked)
+        self.grey_out_settings()
+        self.set_conn_type()
+
+    def db_checked(self):
+        if self.use_db_checkBox.isChecked():
+            self.use_wsi_checkBox.setCheckState(QtCore.Qt.Unchecked)
+        self.grey_out_settings()
+        self.set_conn_type()
+
+    def set_conn_type(self):
+        if self.use_db_checkBox.isChecked():
+            self.parent.run_db_conn = db_conn(self.parent)
+            self.db_type = 'sql'
+        elif self.use_wsi_checkBox.isChecked():
+            self.set_value_dict()
+            self.parent.run_db_conn = dir_db(self.parent, self.value_dict['wsi_dir'])
+            self.db_type = 'dir'
+        else:
+            self.parent.run_db_conn = none_class()
+            self.db_type = None
 
     def ok_pressed(self):
         for cbox_obj in self.combo_obj_dict:
             cur_line = self.combo_obj_dict[cbox_obj].currentText()
             self.combo_obj_dict[cbox_obj].combobox_tidy(cur_line)
-        # self.init_connection()
         self.save_settings()
         self.hide()
+        self.set_connection()
+
+    def set_connection(self):
+        self.set_conn_type()
         self.parent.pd_last_run_pushButton.setEnabled(self.parent.run_db_conn.status)
-        self.init_connection()
+        if self.db_type == 'sql':
+            self.init_db_conn()
 
     def cancel_pressed(self):
+        self.load_settings()
         self.hide()
 
     class cbox_change(object):
@@ -118,9 +158,9 @@ class db_conn(QtCore.QObject):
         super().__init__()
         self.parent = parent
         self.status = False
-        self.thread_pool = QtCore.QThreadPool()
 
     def set_conn_string(self, conn_string):
+        self.thread_pool = QtCore.QThreadPool()
         self.conn_string = conn_string
         pconn = urllib.parse.quote_plus(self.conn_string)
         self.engine = sqlalchemy.create_engine("mssql+pyodbc:///?odbc_connect=%s" % pconn)
@@ -144,6 +184,7 @@ class db_conn(QtCore.QObject):
 
     def last_run(self):
         last_run = self.session.query(self.runs).order_by(self.runs.Run_Number.desc()).first()
+        run_number = last_run.Run_Number
         return last_run
 
     def get_run_time_dict(self):
@@ -186,3 +227,47 @@ class ConnectionRunnable(QtCore.QRunnable):
         except sqlalchemy.exc.DBAPIError:
             self.signal.emit(self.signal.se_signal, False, None, None)
             print('SQL connection failure: DBAPIError')
+
+
+class dir_db(object):
+
+    def __init__(self, parent, path):
+        self.parent = parent
+        self.status = False
+        self.data_path = path + '\\Data\\'
+        # try:
+        self.list_of_runs = os.listdir(self.data_path)
+        self.get_run_time_dict()
+        if len(self.parent.run_times) > 0:
+            self.status = True
+
+    def get_run_time_dict(self):
+        self.parent.run_time_dict = {}
+        self.parent.run_times = []
+        for run in self.list_of_runs:
+            if os.path.isdir(self.data_path + run) is False:
+                continue
+            # try:
+            last_dash = run.rfind('_')
+            if last_dash < 0 or last_dash < (len(run) - 8):
+                continue
+            time_str = run[:last_dash]
+            run_number = int(run[run.rfind('_')+4:])
+            start_time = time.strptime(time_str, "%y%m%d_%H%M%S")
+            # self.parent.run_times.append(row.Run_endtime)
+            self.parent.run_times.append(start_time)
+            self.parent.run_time_dict[start_time] = 'pre-R' + str(run_number)
+                # self.parent.run_time_dict[row.Run_endtime] = 'mid-R' + str(row.Run_Number)
+            # except:
+                # pass
+        self.parent.run_times = sorted(self.parent.run_times, reverse=True)
+
+    def last_run(self):
+
+        return self.parent.run_time_dict[self.parent.run_times[0]][5:]
+
+
+class none_class(object):
+
+    def __init__(self):
+        self.status = False
