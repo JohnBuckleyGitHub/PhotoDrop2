@@ -257,7 +257,9 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
 
     def load_picture(self, row, col):
         file_path = '"' + self.pics_in_dir[row][2] + '"'
-        os.system(file_path)
+        worker = OpenPictureRunnable(file_path)
+        self.thread_pool.start(worker)
+        # os.system(file_path)
 
     def browse_directory(self):
         new_directory_path = QtGui.QFileDialog.getExistingDirectory(None, '', self.directory_comboBox.currentText())
@@ -372,3 +374,13 @@ class LoadImageRunnable(QtCore.QRunnable):
         image = QtGui.QImage(self.image_path)
         image_scaled = image.scaled(self.col_width, self.row_height, QtCore.Qt.KeepAspectRatio)
         self.signal.emit(self.signal.signal, image_scaled, self.col_number, self.row_number)
+
+
+class OpenPictureRunnable(QtCore.QRunnable):
+
+    def __init__(self, file_path):
+        super().__init__()
+        self.file_path = file_path
+
+    def run(self):
+        os.system(self.file_path)

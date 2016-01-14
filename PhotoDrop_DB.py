@@ -8,6 +8,7 @@ import sqlalchemy.ext.automap
 import urllib
 import os
 import time
+# import pyodbc  # needed for py2exe
 
 
 class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
