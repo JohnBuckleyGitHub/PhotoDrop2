@@ -20,9 +20,9 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):
         # self.setupUi(self)  # enable for py2exe
         self.setWindowTitle('Photo Renamer')
         self.brush = kustomWidgets.brushstyle()
-        self.tables = PhotoDropFunctions.pd_ui_class(self)
         self.db_window = PhotoDrop_DB.DataBaseWindow(self)
         self.db_window.set_connection()
+        self.tables = PhotoDropFunctions.pd_ui_class(self)
         QtGui.QApplication.processEvents()
         self.show()
         # self.signalMapper = QtCore.QSignalMapper(self)

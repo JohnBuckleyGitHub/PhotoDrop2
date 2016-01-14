@@ -79,13 +79,13 @@ class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
 
     def init_db_conn(self):
         self.set_value_dict()
-        cs1 = "Driver={SQL Server};Server=" + self.value_dict['server_name'] + ";"
-        cs2 = "Database=" + self.value_dict['db_name'] + ";"
+        cs1 = "Driver={SQL Server Native Client 11.0}; Server=" + self.value_dict['server_name'] + ";"
+        cs2 = " Database=" + self.value_dict['db_name'] + ";"
         if self.windows_auth_checkBox.isChecked():
             cs3 = "trusted_connection=yes;"
         else:
-            uid = "User Id=" + str(self.value_dict['login']) + ";"
-            cs3 = uid + "Password=" + str(self.value_dict['password']) + ";"
+            uid = " UID=" + str(self.value_dict['login']) + ";"
+            cs3 = uid + " PWD=" + str(self.value_dict['password']) + ";"
         conn_string = cs1 + cs2 + cs3
         self.parent.run_db_conn.set_conn_string(conn_string)
         self.parent.run_db_conn.connection_from_runnable()
@@ -185,16 +185,17 @@ class db_conn(QtCore.QObject):
     def last_run(self):
         last_run = self.session.query(self.runs).order_by(self.runs.Run_Number.desc()).first()
         run_number = last_run.Run_Number
-        return last_run
+        return run_number
 
     def get_run_time_dict(self):
-        self.parent.run_time_dict = {}
-        self.parent.run_times = []
-        for row in self.session.query(self.runs).order_by(self.runs.Run_Number.desc()).all():
-            self.parent.run_times.append(row.Run_endtime)
-            self.parent.run_times.append(row.Run_starttime)
-            self.parent.run_time_dict[row.Run_starttime] = 'pre-R' + str(row.Run_Number)
-            self.parent.run_time_dict[row.Run_endtime] = 'mid-R' + str(row.Run_Number)
+        if self.status:
+            self.parent.run_time_dict = {}
+            self.parent.run_times = []
+            for row in self.session.query(self.runs).order_by(self.runs.Run_Number.desc()).all():
+                self.parent.run_times.append(row.Run_endtime)
+                self.parent.run_times.append(row.Run_starttime)
+                self.parent.run_time_dict[row.Run_starttime] = 'pre-R' + str(row.Run_Number)
+                self.parent.run_time_dict[row.Run_endtime] = 'mid-R' + str(row.Run_Number)
 
 
 class SignalEmitter(QtCore.QObject):
@@ -214,19 +215,19 @@ class ConnectionRunnable(QtCore.QRunnable):
 
     def run(self):
         # establishes connection
-        try:
+        # try:
             self.engine.connect()
             session = sqlalchemy.orm.Session(self.engine)
             base = sqlalchemy.ext.automap.automap_base()
             base.prepare(self.engine, reflect=True)
             runs = base.classes.Runs
             self.signal.emit(self.signal.se_signal, True, session, runs)
-        except sqlalchemy.exc.ProgrammingError:
-            self.signal.emit(self.signal.se_signal, False, None, None)
-            print('SQL connection failure: ProgrammingError')
-        except sqlalchemy.exc.DBAPIError:
-            self.signal.emit(self.signal.se_signal, False, None, None)
-            print('SQL connection failure: DBAPIError')
+        # except sqlalchemy.exc.ProgrammingError:
+        #     self.signal.emit(self.signal.se_signal, False, None, None)
+        #     print('SQL connection failure: ProgrammingError')
+        # except sqlalchemy.exc.DBAPIError:
+        #     self.signal.emit(self.signal.se_signal, False, None, None)
+        #     print('SQL connection failure: DBAPIError')
 
 
 class dir_db(object):
@@ -235,11 +236,13 @@ class dir_db(object):
         self.parent = parent
         self.status = False
         self.data_path = path + '\\Data\\'
-        # try:
-        self.list_of_runs = os.listdir(self.data_path)
-        self.get_run_time_dict()
-        if len(self.parent.run_times) > 0:
-            self.status = True
+        try:
+            self.list_of_runs = os.listdir(self.data_path)
+            self.get_run_time_dict()
+            if len(self.parent.run_times) > 0:
+                self.status = True
+        except:
+            print('Directory not found')
 
     def get_run_time_dict(self):
         self.parent.run_time_dict = {}
@@ -247,19 +250,19 @@ class dir_db(object):
         for run in self.list_of_runs:
             if os.path.isdir(self.data_path + run) is False:
                 continue
-            # try:
-            last_dash = run.rfind('_')
-            if last_dash < 0 or last_dash < (len(run) - 8):
-                continue
-            time_str = run[:last_dash]
-            run_number = int(run[run.rfind('_')+4:])
-            start_time = time.strptime(time_str, "%y%m%d_%H%M%S")
-            # self.parent.run_times.append(row.Run_endtime)
-            self.parent.run_times.append(start_time)
-            self.parent.run_time_dict[start_time] = 'pre-R' + str(run_number)
+            try:
+                last_dash = run.rfind('_')
+                if last_dash < 0 or last_dash < (len(run) - 8):
+                    continue
+                time_str = run[:last_dash]
+                run_number = int(run[run.rfind('_')+4:])
+                start_time = time.strptime(time_str, "%y%m%d_%H%M%S")
+                # self.parent.run_times.append(row.Run_endtime)
+                self.parent.run_times.append(start_time)
+                self.parent.run_time_dict[start_time] = 'pre-R' + str(run_number)
                 # self.parent.run_time_dict[row.Run_endtime] = 'mid-R' + str(row.Run_Number)
-            # except:
-                # pass
+            except:
+                pass
         self.parent.run_times = sorted(self.parent.run_times, reverse=True)
 
     def last_run(self):

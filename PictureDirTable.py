@@ -96,7 +96,7 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                 table.setRowHeight(i, self.no_check_row_height)
             col = 0
             full_text = self.pics_in_dir[i][0] + "\n" + self.pics_in_dir[i][1]
-            if pic_id in self.parent.est_run_buffer_dict:
+            if pic_id in self.parent.est_run_buffer_dict and self.name is not 'output_table':
                 full_text += "\n" + str(self.parent.est_run_buffer_dict[pic_id])
             item = QtGui.QTableWidgetItem(full_text)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable |
@@ -161,12 +161,16 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         self.parent.est_run_buffer_dict[self.picture_id_from_file_pack(file_pack)] = self.find_run_time(c_time_struct)
 
     def find_run_time(self, c_time_struct):
+        last_run_time = self.parent.parent.run_times[0]
+        run_number_str = str(self.parent.parent.run_time_dict[last_run_time])
+        if run_number_str[:6] != 'post-R':
+            run_number_str = 'post-R' + run_number_str[5:]
         for runtime in enumerate(self.parent.parent.run_times):
             if runtime[1] is not None:
                 if runtime[1] <= c_time_struct:
-                    return self.parent.parent.run_time_dict[runtime[1]]
                     break
-        return 'post-R' + str(self.parent.parent.run_db_conn.last_run().Run_Number)
+                run_number_str = self.parent.parent.run_time_dict[runtime[1]]
+        return run_number_str
 
     def set_current_table(self):
         self.parent.active_table = self.name
@@ -265,6 +269,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         self.refresh_table()
 
     def refresh_table(self):
+        try:
+            self.parent.parent.run_db_conn.get_run_time_dict()
+        except:
+            pass
         self.create_dir_table_data()
         self.table_from_list()
         self.parent.drag_items_table = None

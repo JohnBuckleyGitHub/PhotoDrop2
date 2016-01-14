@@ -83,6 +83,9 @@ class pd_ui_class(QtCore.QObject):
         last_run = self.parent.run_db_conn.last_run()
         self.parent.pd_run_number_spinBox.setValue(int(last_run))
 
+    def update_run_time_dict(self):
+        self.parent.run_db_conn.get_run_time_dict()
+
     def input_transfer_selection(self):
         selection_list = self.input_table.transfer_selection()
         self.transfer_table_list.extend(selection_list)
