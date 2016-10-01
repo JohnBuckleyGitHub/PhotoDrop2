@@ -18,7 +18,7 @@ class MyWindow(QtGui.QMainWindow, kustomWidgets.status_label_class):
         super().__init__()
         uic.loadUi('PhotoDrop.ui', self)  # disable for py2exe
         # self.setupUi(self)  # enable for py2exe
-        self.setWindowTitle('Photo Renamer')
+        self.setWindowTitle('Photo Drop V1.10')
         self.brush = kustomWidgets.brushstyle()
         self.db_window = PhotoDrop_DB.DataBaseWindow(self)
         self.db_window.set_connection()

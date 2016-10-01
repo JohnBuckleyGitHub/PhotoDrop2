@@ -1,0 +1,13 @@
+[General]
+input_tablesort_comboBox=6
+input_table_checkbox=2
+output_tablesort_comboBox=7
+output_table_checkbox=2
+input_table_combo_items=V:\\PME\\Eye-Fi, X:\\PME\\Photos\\Backup, X:\\PME\\Photos, , C:\\Users\\Johns Lenovo\\Documents\\Pictures\\Eye-Fi, C:\\Users\\Johns Lenovo\\Documents\\Pictures\\I15C07 SW SOS
+input_table_combo_items_index=0
+output_table_combo_items=V:\\PME\\16C02\\Photos, , V:\\PME\\16C01\\Photos, X:\\PME\\Photos, C:\\Users\\Johns Lenovo\\Documents\\Pictures\\Picasa
+output_table_combo_items_index=0
+transfer_table_checkbox=2
+pd_run_number_spinBox=7675
+pd_prefix_lineEdit=I16A01_
+pd_increment_letter_lineEdit=aa

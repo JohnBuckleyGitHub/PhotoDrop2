@@ -144,7 +144,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
         filename = os.path.basename(file_path)
         creation_time = self.get_creation_times(file_path)
         modified_time = os.path.getmtime(file_path)
-        file_pack = [filename, creation_time, file_path, modified_time]
+        run_string = filename[filename.find('_')+1:]
+        seq_type = type(run_string)
+        run_number = int(seq_type().join(filter(seq_type.isdigit, run_string)))
+        file_pack = [filename, creation_time, file_path, modified_time, run_number]
         return file_pack
 
     def get_run_number(self, file_pack):
@@ -335,7 +338,10 @@ class Pic_Dir_Table(QtCore.QObject):  # QtGui.QWidget):
                           'Date Modified - Ascending': [3, False],
                           'Date Modified - Descending': [3, True],
                           'Name - Ascending': [0, False],
-                          'Name - Descending': [0, True]}
+                          'Name - Descending': [0, True],
+                          'Run Number - Ascending': [4, False],
+                          'Run Number - Descending': [4, True]}
+        self.sort_comboBox.clear()
         self.sort_comboBox.insertItems(0, sorted(self.sort_dict.keys()))
 
     def load_picture_from_runnable(self, image_path, col_number, row_number):

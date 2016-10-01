@@ -1,4 +1,6 @@
 from PyQt4 import QtGui
+#  Version 1.1
+#  Update is version control
 
 
 class TidyComboBox(QtGui.QComboBox):

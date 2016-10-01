@@ -4,6 +4,7 @@ from PyQt4 import QtCore
 import PictureDirTable
 import shutil
 from send2trash import send2trash
+import kustomWidgets
 
 
 class pd_ui_class(QtCore.QObject):
@@ -121,8 +122,11 @@ class pd_ui_class(QtCore.QObject):
             file_type = file_item[0][file_item[0].find('.'):]
             for j in range(1000):
                 inc_letter = letter_increment(increment_letter, j)
-                new_name = (self.parent.pd_prefix_lineEdit.text() + self.parent.pd_run_number_spinBox.text() +
+                run_number = kustomWidgets.zeronater(int(self.parent.pd_run_number_spinBox.text()), 4)
+                # run_number = self.parent.pd_run_number_spinBox.text()
+                new_name = (self.parent.pd_prefix_lineEdit.text() + run_number +
                             inc_letter + file_type)
+                print(new_name)
                 new_file = output_path + '/' + new_name
                 if os.path.exists(new_file) is False:
                     break

@@ -7,8 +7,9 @@ import sqlalchemy.orm
 import sqlalchemy.ext.automap
 import urllib
 import os
-import time
-# import pyodbc  # needed for py2exe
+import datetime
+import pyodbc  # needed for py2exe
+import kustomWidgets
 
 
 class DataBaseWindow(QtGui.QWidget):  # disable for py2exe
@@ -216,19 +217,22 @@ class ConnectionRunnable(QtCore.QRunnable):
 
     def run(self):
         # establishes connection
-        # try:
+        try:
             self.engine.connect()
             session = sqlalchemy.orm.Session(self.engine)
             base = sqlalchemy.ext.automap.automap_base()
             base.prepare(self.engine, reflect=True)
             runs = base.classes.Runs
             self.signal.emit(self.signal.se_signal, True, session, runs)
-        # except sqlalchemy.exc.ProgrammingError:
-        #     self.signal.emit(self.signal.se_signal, False, None, None)
-        #     print('SQL connection failure: ProgrammingError')
-        # except sqlalchemy.exc.DBAPIError:
-        #     self.signal.emit(self.signal.se_signal, False, None, None)
-        #     print('SQL connection failure: DBAPIError')
+        except sqlalchemy.exc.ProgrammingError:
+            self.signal.emit(self.signal.se_signal, False, None, None)
+            print('SQL connection failure: ProgrammingError')
+        except sqlalchemy.exc.DBAPIError:
+            self.signal.emit(self.signal.se_signal, False, None, None)
+            print('SQL connection failure: DBAPIError')
+        except pyodbc.Error:
+            self.signal.emit(self.signal.se_signal, False, None, None)
+            print('SQL connection failure: pyodbc error')
 
 
 class dir_db(object):
@@ -236,28 +240,37 @@ class dir_db(object):
     def __init__(self, parent, path):
         self.parent = parent
         self.status = False
-        self.data_path = path + '\\Data\\'
+        data_string = '\\Data'
+        if path.find(data_string) < 1:
+            self.data_path = path + data_string + '\\'
+        else:
+            self.data_path = path
+        self.get_run_time_dict()
+        if len(self.parent.run_times) > 0:
+            self.status = True
+
+    def get_dir_list(self):
         try:
             self.list_of_runs = os.listdir(self.data_path)
-            self.get_run_time_dict()
-            if len(self.parent.run_times) > 0:
-                self.status = True
         except:
             print('Directory not found')
+            self.list_of_runs = []
 
     def get_run_time_dict(self):
+        self.get_dir_list()
         self.parent.run_time_dict = {}
         self.parent.run_times = []
         for run in self.list_of_runs:
-            if os.path.isdir(self.data_path + run) is False:
+            if os.path.isdir(self.data_path + '\\' + run) is False:
                 continue
             try:
                 last_dash = run.rfind('_')
                 if last_dash < 0 or last_dash < (len(run) - 8):
                     continue
                 time_str = run[:last_dash]
-                run_number = int(run[run.rfind('_')+4:])
-                start_time = time.strptime(time_str, "%y%m%d_%H%M%S")
+                run_number = kustomWidgets.zeronater(int(run[run.rfind('_')+4:]), 3)
+                # start_time = time.strptime(time_str, "%y%m%d_%H%M%S")
+                start_time = datetime.datetime.strptime(time_str, "%y%m%d_%H%M%S")
                 # self.parent.run_times.append(row.Run_endtime)
                 self.parent.run_times.append(start_time)
                 self.parent.run_time_dict[start_time] = 'pre-R' + str(run_number)
@@ -267,7 +280,7 @@ class dir_db(object):
         self.parent.run_times = sorted(self.parent.run_times, reverse=True)
 
     def last_run(self):
-
+        self.get_run_time_dict()
         return self.parent.run_time_dict[self.parent.run_times[0]][5:]
 
 

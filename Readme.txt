@@ -1,4 +1,4 @@
-Photo Drop V1.0 (2016.01.13)
+Photo Drop V1.10 (2016.01.13)
 ---------------------------------------------
 
 A utility for copying and renaming photos.  It can also name photos pasted from the clipboard.
@@ -6,6 +6,11 @@ A utility for copying and renaming photos.  It can also name photos pasted from 
 To use create shortcut to PhotoDrop.exe
 
 Use DB setup function to get estimated run numbers.  These are based upon run and file creation times, and so should be taken as approximate due to variability of copy times from camera.
+
+V1.10
+_________________________________________
+Fixed error from config files
+
 
 Known issues
 -----------------------------------------
