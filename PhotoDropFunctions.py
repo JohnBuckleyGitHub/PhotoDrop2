@@ -26,7 +26,7 @@ class pd_ui_class(QtCore.QObject):
         self.settings = QtCore.QSettings('settings.ini', QtCore.QSettings.IniFormat)
         self.settings.setFallbacksEnabled(False)
         self.parent.pd_run_number_spinBox.setValue(int(self.settings.value('pd_run_number_spinBox', 0)))
-        self.parent.pd_prefix_lineEdit.setText(self.settings.value('pd_prefix_lineEdit', 'I15C08'))
+        self.parent.pd_prefix_lineEdit.setText(self.settings.value('pd_prefix_lineEdit', 'Session Name here'))
         self.parent.pd_increment_letter_lineEdit.setText(self.settings.value('pd_increment_letter_lineEdit', 'aa'))
 
     def input_table(self):
